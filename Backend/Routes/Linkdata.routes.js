@@ -1,7 +1,10 @@
 import { Router } from "express";
 import { SaveLinks } from "../Controllers/Linkdata.controller.js";
-import { EditLinksandTag } from "../Controllers/Linkdata.controller.js";
+import { EditLinkdata } from "../Controllers/Linkdata.controller.js";
+import { EditCustomTag } from "../Controllers/Linkdata.controller.js";
+import { VerifyJWT } from "../Middleware/Auth.middleware.js";
 const Routers = Router();
-Routers.route("/Mainpage").post(SaveLinks);
-Routers.route("/Editpage").patch(EditLinksandTag);
+Routers.route("/Mainpage").post(VerifyJWT, SaveLinks);
+Routers.route("/Editpage").patch(VerifyJWT, EditLinkdata);
+Routers.route("/Edittags").patch(VerifyJWT, EditCustomTag);
 export default Routers;
