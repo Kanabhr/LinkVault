@@ -66,7 +66,4 @@ userSchema.methods.generateRefreshToken = function () {
     },
   );
 };
-// userSchema.methods.verifyTokens = function () {
-//   return jwt.verify();
-// };
 export const User = mongoose.model("User", userSchema);

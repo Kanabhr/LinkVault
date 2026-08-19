@@ -9,7 +9,7 @@ const CustomCategory = new mongoose.Schema(
     },
     Customcat: {
       type: String,
-      required: true,
+      // it should be optional and if a customcat is created user should get option to save in existing custom category
     },
     parentTag: {
       type: mongoose.Schema.Types.ObjectId,
@@ -38,7 +38,8 @@ const urlschema = new mongoose.Schema(
     CategoriesbyDef: {
       type: String,
       default: "Personal",
-    },
+      enum: ["Personal", "Entertainment", "Knowledge", "Instagram"],
+    }, // either select from this or not so if customcat is not created or checked it should be default personal
     customTagId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "CustomTag", // points to the tag document
@@ -47,10 +48,4 @@ const urlschema = new mongoose.Schema(
   },
   { timestamps: true },
 );
-// CustomCategory.pre("save", async function (next) {
-//   if (this.Isprivate == true) {
-//     console.log(`${this.Isprivate} is now a private category`);
-//   }
-//   next();
-// });
 export const urldata = mongoose.model("urldata", urlschema);
