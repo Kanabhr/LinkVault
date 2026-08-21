@@ -1,5 +1,6 @@
 import { AsyncHandler } from "../Utils/AsyncHandler.js";
 import { User } from "../MongoDB/Models/UserSchema.js";
+import { urldata } from "../MongoDB/Models/Urlschema.js";
 import { ApiError } from "../Utils/ApiError.js";
 import { ApiResponse } from "../Utils/ApiResponse.js";
 import { ValidPassword, ValidEmail, ValidUserName, InputValidation } from "../Utils/Validation.js";
@@ -35,7 +36,7 @@ const RegisterUser = AsyncHandler(async (req, res) => {
 
   const user = await User.create({
     useremail,
-    username: username.toLowerCase(),
+    username,
     password,
   });
 
@@ -62,7 +63,7 @@ const LoginUser = AsyncHandler(async (req, res) => {
     throw new ApiError(401, "Wrong user credentials entered");
   }
   const { accesstoken, refreshtoken } = await generateAccessandRefreshToken(CheckUser._id);
-  const LoggedInUser = await User.findByIdAndUpdate(CheckUser._id).select("-password -RefreshToken");
+  await User.findByIdAndUpdate(CheckUser._id).select("-password -RefreshToken"); //loggedInUser
   const Cookieoptions = {
     httpOnly: true,
     secure: true,
@@ -83,12 +84,15 @@ const LogoutUser = AsyncHandler(async (req, res) => {
     httpOnly: true,
     secure: true,
   };
-  return res.status(200).clearCookie("accesstoken", Cookieoptions).clearCookie("refreshtoken", Cookieoptions).json(new ApiResponse(201, "User Logged Out"));
+  return res
+    .status(200)
+    .clearCookie("accesstoken", Cookieoptions)
+    .clearCookie("refreshtoken", Cookieoptions)
+    .json(new ApiResponse(200, {}, "User Logged Out"));
 });
 const UserProfile = AsyncHandler(async (req, res) => {
-  res.status(200).json({
-    message: "This is User profile",
-  });
+  const UserLinks = await urldata.find({ userId: req.user._id }).populate("customTagId").populate("userId", "username useremail");
+  res.status(200).json(new ApiResponse(200, { UserLinks }, "User data fetched"));
 });
 
 export { RegisterUser, LoginUser, UserProfile, LogoutUser };
