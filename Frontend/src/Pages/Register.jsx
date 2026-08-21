@@ -19,7 +19,7 @@ export default function Register() {
   const strength = getStrength(password);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-teal-800 via-teal-600 to-slate-700 px-4">
+    <div className="min-h-[calc(100vh-64px)] flex items-center justify-center bg-gradient-to-br from-teal-800 via-teal-600 to-slate-700 px-4 py-8">
       <div className="bg-slate-100 rounded-3xl p-8 w-full max-w-sm shadow-2xl">
         {/* Icon */}
         <div className="flex justify-center mb-4">

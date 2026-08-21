@@ -1,20 +1,21 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "./assets/vite.svg";
-import heroImg from "./assets/hero.png";
-import axios from "axios";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import "./App.css";
-import { useEffect } from "react";
-import Register from "../Auth/Register";
-import Dashboard from "./Dashboard";
-import Login from "../Auth/Login";
+import Register from "./Pages/Register";
+import Dashboard from "./Pages/Dashboard";
+import Login from "./Pages/Login";
+import RegisterForm from "./components/new";
 function App() {
   return (
-    <>
-      <Register />
-      <Dashboard />
-      <Login />
-    </>
+    <Router>
+      <div className="min-h-screen bg-[#0b2b26]">
+        <Routes>
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/new" element={<RegisterForm />} />
+        </Routes>
+      </div>
+    </Router>
   );
 }
 
