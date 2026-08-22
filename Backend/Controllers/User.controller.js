@@ -56,20 +56,19 @@ const LoginUser = AsyncHandler(async (req, res) => {
   if (!CheckUser) {
     throw new ApiError(408, "User doesn't exist please register first");
   }
-  // const safeUser = await User.findById(CheckUser._id).select("-password -RefreshToken")
   const IsPasswordCorrect = await bcrypt.compare(password, CheckUser.password);
 
   if (!IsPasswordCorrect) {
     throw new ApiError(401, "Wrong user credentials entered");
   }
+  const safeUser = await User.findById(CheckUser._id).select("-password -RefreshToken")
   const { accesstoken, refreshtoken } = await generateAccessandRefreshToken(CheckUser._id);
-  await User.findByIdAndUpdate(CheckUser._id).select("-password -RefreshToken"); //loggedInUser
   const Cookieoptions = {
     httpOnly: true,
     secure: true,
   };
   return res.status(200).cookie("accessToken", accesstoken, Cookieoptions).cookie("refreshToken", refreshtoken, Cookieoptions).json({
-    message: "User Logged In",
+    message: "User Logged In", user : safeUser
   });
 });
 const LogoutUser = AsyncHandler(async (req, res) => {
@@ -94,5 +93,8 @@ const UserProfile = AsyncHandler(async (req, res) => {
   const UserLinks = await urldata.find({ userId: req.user._id }).populate("customTagId").populate("userId", "username useremail");
   res.status(200).json(new ApiResponse(200, { UserLinks }, "User data fetched"));
 });
+const getCurrentUser = AsyncHandler(async (req, res) => {
+  res.status(200).json(new ApiResponse(200, req.user, "User fetched"))
+})
 
-export { RegisterUser, LoginUser, UserProfile, LogoutUser };
+export { RegisterUser, LoginUser, UserProfile, LogoutUser ,getCurrentUser};

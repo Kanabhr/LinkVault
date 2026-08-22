@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { RegisterUser } from "../Controllers/User.controller.js";
+import { getCurrentUser, RegisterUser } from "../Controllers/User.controller.js";
 import { LoginUser } from "../Controllers/User.controller.js";
 import { UserProfile } from "../Controllers/User.controller.js";
 import { LogoutUser } from "../Controllers/User.controller.js";
@@ -9,5 +9,5 @@ router.route("/register").post(RegisterUser);
 router.route("/login").post(LoginUser);
 router.route("/logout").post(VerifyJWT, LogoutUser);
 router.route("/userprofile").get(VerifyJWT, UserProfile);
-
+router.route("/me").get(VerifyJWT,getCurrentUser)
 export default router;
