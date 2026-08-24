@@ -1,20 +1,44 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import "./App.css";
+
+// All Pages
+import LandingPage from "./Pages/LandingPage";
+import Login from "./Pages/Login";
 import Register from "./Pages/Register";
 import Dashboard from "./Pages/Dashboard";
-import Login from "./Pages/Login";
-import RegisterForm from "./components/new";
+import UserProfile from "./Pages/UserProfile";
+import Categories from "./Pages/Categories";
+import PublicProfile from "./Pages/PublicProfile";
+import Notfound from "./Pages/Notfound";
+
+// Route guards
+import ProtectedRoute from "./components/ProtectedRoute";
+import PublicRoute from "./components/PublicRoute";
+
 function App() {
   return (
     <Router>
-      <div className="min-h-screen bg-[#0b2b26]">
-        <Routes>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/register" element={<Register />} />
+      <Routes>
+
+        {/* Public pages — accessible by everyone */}
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/u/:username" element={<PublicProfile />} />
+        <Route path="*" element={<Notfound />} />
+
+        {/* Auth pages — redirect to /dashboard if already logged in */}
+        <Route element={<PublicRoute />}>
           <Route path="/login" element={<Login />} />
-          <Route path="/new" element={<RegisterForm />} />
-        </Routes>
-      </div>
+          <Route path="/register" element={<Register />} />
+        </Route>
+
+        {/* Protected pages — redirect to /login if not logged in */}
+        <Route element={<ProtectedRoute />}>
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/profile" element={<UserProfile />} />
+          <Route path="/categories" element={<Categories />} />
+        </Route>
+
+      </Routes>
     </Router>
   );
 }

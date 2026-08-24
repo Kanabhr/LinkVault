@@ -1,3 +1,8 @@
 .vscode/
 node_modules/
 .env
+.kiro/
+.DS_Store
+Thumbs.db
+*.log
+dist/
