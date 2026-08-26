@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { useLinks } from "../../context/Linkcontext";
+import { Link } from "react-router-dom";
 import { useAuth } from "../../context/Authcontext";
 export default function Dashboard(){
-  // const navigate = useNavigate()
-  const [link,setLink] = useState("")
+  const [linkText,setLinkText] = useState("")
   const [Customtag,setCustomtag] = useState("")
   const [selectedCategory,setSelectedCategory] = useState("Personal")
   const [loading,setLoading] = useState(false)
@@ -18,18 +17,27 @@ fetchlinks()
 
   const handleEvent = async (e) => {
     e.preventDefault()
-    if(!link){
-setError("Url field cannot be empty!")
-return;
-    }
-    setLoading(true)
-    try {
-   if (Customtag) {
-  await addlinks({ Linkdata: link, Customcat: Customtag })
-} else {
-  await addlinks({ Linkdata: link, CategoriesbyDef: selectedCategory })
+
+const urlArray = linkText
+  .split(/[\n, ]+/)
+  .map(url => url.trim())
+  .filter(url => url.length > 0)
+
+if (urlArray.length === 0) {
+  setError("Please provide at least one URL!")
+  return
 }
-setLink("")
+setLoading(true)
+try {
+  for (const singleUrl of urlArray) {
+    const payload = Customtag
+      ? { Linkdata: singleUrl, Customcat: Customtag }
+      : { Linkdata: singleUrl, CategoriesbyDef: selectedCategory }
+    await addlinks(payload)
+  }
+  setLinkText("")
+
+
 setCustomtag("")
 setSelectedCategory("Personal")
 setError("")
@@ -46,7 +54,13 @@ setError("")
     <div>
       <p>Welcome, {user?.username}</p>
       <form  onSubmit={handleEvent}>
-<input type="url" name="" id="" placeholder="Paste your URls here" value={link} onChange={(e)=>setLink(e.target.value)} required/>
+<textarea
+onChange={(e)=> setLinkText(e.target.value)}
+required
+rows={4}
+value={linkText}
+placeholder="Paste one or multiple URLs (separated by newline, space, or comma)"
+/>
 <select name="" id="" value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)}>
 <option value="Personal">Personal</option>
 <option value="Entertainment">Entertainment</option>
@@ -67,7 +81,8 @@ setError("")
     <p>{link.CategoriesbyDef || link.customTagId?.Customcat}</p>
   </div>
 ))}
-
+<Link to="/profile">My Profile</Link>
+<Link to={`/u/${user?.username}`}>Public Profile</Link>
     <p>{error}</p> 
     </>
   )

@@ -1,5 +1,4 @@
-import { urldata } from "../MongoDB/Models/Urlschema.js";
-import { CustomTag } from "../MongoDB/Models/Urlschema.js";
+import { urldata , CustomTag } from "../MongoDB/Models/Urlschema.js";
 import { User } from "../MongoDB/Models/UserSchema.js";
 import { ApiError } from "../Utils/ApiError.js";
 import { ApiResponse } from "../Utils/ApiResponse.js";

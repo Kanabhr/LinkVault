@@ -28,13 +28,11 @@ const [error,setError]= useState(null)
 }
 
   const addlinks = async (data) => {
-    try {
+  
   const res = await savelink(data)
   const newlink = res.data.data
   setLinks(prev => [newlink,...prev])
-    } catch (error) {
-      setError("Problem while saving link")
-    }
+  
   }
   const removelink = async (id) => {
     try {
