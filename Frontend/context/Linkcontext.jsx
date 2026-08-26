@@ -23,24 +23,34 @@ const [error,setError]= useState(null)
   } catch (err) {
     setError(err.response?.data?.message || "Failed to fetch links")
   } finally {
-    setLoading(false)                                 // always runs, success or fail
+    setLoading(false) // always runs, success or fail
   }
 }
 
   const addlinks = async (data) => {
-    const res = await savelink(data)
+    try {
+  const res = await savelink(data)
   const newlink = res.data.data
-  setLinks(prev => [newlink,...prev]) //for adding
+  setLinks(prev => [newlink,...prev])
+    } catch (error) {
+      setError("Problem while saving link")
+    }
   }
   const removelink = async (id) => {
-    await deletelink(id);
+    try {
+       await deletelink(id);
     setLinks(prev => prev.filter(link => link._id !==id))// for removing 
-    
+    } catch (error) {
+      setError("Error while deleting link")
+    }
   }
-    const removetag = async (id) => {
-    await deletetag(id);
-    setCustomtags(prev => prev.filter(link => link._id !==id))// for removing 
-    
+  const removetag = async (id) => {
+    try {
+      await deletetag(id)
+      setCustomtags(prev => prev.filter(tag => tag._id !== id))
+    } catch (error) {
+      setError("Error while deleting tag")
+    }
   }
   const updatelink = async (id ,data) =>{
     const res = await editlink(id, data)
@@ -56,5 +66,4 @@ const [error,setError]= useState(null)
     </LinkContext.Provider>
   );
 }
-
 export const useLinks = () => useContext(LinkContext);

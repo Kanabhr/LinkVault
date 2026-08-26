@@ -1,5 +1,4 @@
 import mongoose, { Schema } from "mongoose";
-import bcrypt from "bcrypt";
 const CustomCategory = new mongoose.Schema(
   {
     UserID: {
