@@ -51,12 +51,24 @@ const [error,setError]= useState(null)
     }
   }
   const updatelink = async (id ,data) =>{
-    const res = await editlink(id, data)
-    setLinks(prev => prev.map(link => link._id === id ? res.data.data : link))// for updating
+    try {
+       const res = await editlink(id, data)
+    setLinks(prev => prev.map(link => link._id === id ? res.data.data : link))
+    } catch (error) {
+      setError("Error while updating link")
+       throw error
+    }
+   // for updating
   }
    const updatetag = async (id ,data) =>{
-    const res = await edittag(id, data)
-    setCustomtags(prev => prev.map(link => link._id === id ? res.data.data : link))// for updating
+    try {
+      const res = await edittag(id, data)
+    setCustomtags(prev => prev.map(link => link._id === id ? res.data.data : link))
+    } catch (error) {
+       setError("Error while updating tag")
+        throw error
+    }
+    // for updating
   }
   return (
     <LinkContext.Provider value={{ fetchlinks,addlinks,removelink,removetag,updatelink,updatetag,links,customtags,loading,error}}>

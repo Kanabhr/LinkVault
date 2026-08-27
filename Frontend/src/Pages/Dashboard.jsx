@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { useLinks } from "../../context/Linkcontext";
+import { useLinks } from "../context/Linkcontext";
 import { Link } from "react-router-dom";
-import { useAuth } from "../../context/Authcontext";
+import { useAuth } from "../context/Authcontext";
 export default function Dashboard(){
   const [linkText,setLinkText] = useState("")
   const [Customtag,setCustomtag] = useState("")

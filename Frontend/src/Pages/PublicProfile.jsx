@@ -1,4 +1,4 @@
-import { getpubliclinks } from "../../api/linkApi"
+import { getpubliclinks } from "../api/linkApi"
 import { useState,useEffect  } from "react";
 import { useParams } from "react-router-dom";
 export default function Publicprofile(){
@@ -30,8 +30,10 @@ useEffect( ()=>{
           <p>{links.Linkdata}</p>
           <p> {links.CategoriesbyDef}</p>
           <a href={links.Linkdata} target="_blank" rel="noreferrer">Open</a>
+      
         </div>
       ))}
+        {error && <p>{error}</p>} 
     </div>
     </>
 }

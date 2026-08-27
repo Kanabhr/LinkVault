@@ -1,5 +1,5 @@
 import { Navigate, Outlet } from "react-router-dom";
-import { useAuth } from "../../context/Authcontext.jsx";
+import { useAuth } from "../context/Authcontext.jsx";
 
 // Wraps routes that should NOT be accessible when logged in
 // Usage in App.jsx:

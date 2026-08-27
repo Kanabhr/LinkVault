@@ -1,5 +1,5 @@
-import { useLinks } from "../../context/Linkcontext"
-import { useAuth } from "../../context/Authcontext"
+import { useLinks } from "../context/Linkcontext"
+import { useAuth } from "../context/Authcontext"
 import { useState, useEffect } from "react"
 
 export default function UserProfile() {

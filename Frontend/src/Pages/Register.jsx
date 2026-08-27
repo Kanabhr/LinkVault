@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ValidEmail , ValidPassword , ValidUserName } from "../utils/Validators";
-import { registerUser } from "../../api/authapi";
+import { registerUser } from "../api/authapi";
 export default function Register(){
   const [username,setUsername] = useState("");
   const [useremail,setUseremail] = useState("");

@@ -6,7 +6,6 @@ import { AsyncHandler } from "../Utils/AsyncHandler.js";
 import { InputValidation } from "../Utils/Validation.js";
 const SaveLinks = AsyncHandler(async (req, res) => {
   const { Linkdata, CategoriesbyDef, Customcat } = req.body;
-  console.log("Link is :", Linkdata, "Category is :", Customcat);
   if (!InputValidation(Linkdata)) {
     throw new ApiError(500, "Cannot be empty");
   }
