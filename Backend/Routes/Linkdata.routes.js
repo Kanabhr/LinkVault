@@ -1,9 +1,5 @@
 import { Router } from "express";
-import { SaveLinks } from "../Controllers/Linkdata.controller.js";
-import { EditLinkdata } from "../Controllers/Linkdata.controller.js";
-import { EditCustomTag } from "../Controllers/Linkdata.controller.js";
-import { DeleteTags } from "../Controllers/Linkdata.controller.js";
-import { DeleteLinks } from "../Controllers/Linkdata.controller.js";
+import { SaveLinks, EditLinkdata, EditCustomTag, DeleteTags, DeleteLinks } from "../Controllers/Linkdata.controller.js";
 import { VerifyJWT } from "../Middleware/Auth.middleware.js";
 const Routers = Router();
 Routers.route("/Mainpage").post(VerifyJWT, SaveLinks);
