@@ -13,11 +13,7 @@ export default function PublicRoute() {
 
   // Still checking — show spinner, don't redirect yet
   if (loading) {
-    return (
-      <div className="flex h-screen items-center justify-center bg-[#0b2b26]">
-        <div className="w-8 h-8 border-4 border-teal-500 border-t-transparent rounded-full animate-spin" />
-      </div>
-    );
+    return <p>Loading...</p>
   }
 
   // Already logged in — redirect away from login/register

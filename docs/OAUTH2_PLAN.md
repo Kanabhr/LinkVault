@@ -11,27 +11,49 @@ References:
 
 ---
 
+## ⚠️ Do This Before Starting OAuth
+
+**Deploy the app first.** OAuth requires a registered redirect URI.
+`localhost` works for development but Google blocks sensitive scopes on localhost
+during OAuth verification review. Having a live URL from day one avoids
+redoing everything post-deployment.
+
+Minimum deployment setup:
+- Backend → Render or Railway (free tier)
+- Frontend → Vercel (free tier)
+- Add both localhost AND production URIs to Google Cloud Console
+
+---
+
 ## How OAuth 2.0 Authorization Code Flow Works
 
 ```
 User clicks "Connect YouTube"
         ↓
-Frontend redirects to Google's consent screen
-(GET https://accounts.google.com/o/oauth2/auth?client_id=...&scope=...&redirect_uri=...)
+Frontend does: window.location.href = "/api/v1/oauth/youtube/connect"
+(NOT axios — browser must navigate to trigger redirect)
+        ↓
+Backend redirects to Google's consent screen
+(GET https://accounts.google.com/o/oauth2/auth?client_id=...&scope=...&state=...&redirect_uri=...)
         ↓
 User approves — Google redirects back to your redirect_uri with a `code`
-(GET http://localhost:3000/api/v1/oauth/youtube/callback?code=4/abc123...)
+(GET http://localhost:3000/api/v1/oauth/youtube/callback?code=4/abc123...&state=...)
         ↓
-Your backend exchanges the code for tokens
-(POST https://oauth2.googleapis.com/token)
+Your backend:
+  1. Verify state parameter (CSRF protection)
+  2. Exchange code for tokens via POST https://oauth2.googleapis.com/token
         ↓
 Google returns: { access_token, refresh_token, expires_in }
         ↓
-Store tokens securely, use access_token to call YouTube API
+Store tokens in OAuthToken collection
+Redirect user back to /import page on frontend
 ```
 
-The `code` is single-use and expires in minutes. The `access_token` expires in 1 hour.
-The `refresh_token` is long-lived — use it to get new access tokens silently.
+Key facts:
+- `code` is single-use, expires in minutes
+- `access_token` expires in 1 hour — always check `expiresAt` before API calls
+- `refresh_token` is long-lived — use it silently to get new access tokens
+- `refresh_token` is only returned ONCE on first authorization — store it immediately
 
 ---
 
@@ -40,14 +62,18 @@ The `refresh_token` is long-lived — use it to get new access tokens silently.
 1. Go to https://console.cloud.google.com
 2. Create a new project: "BMS-App"
 3. Enable APIs:
-   - YouTube Data API v3
-   - Google People API (for user profile)
-4. Create credentials → OAuth 2.0 Client ID
+   - YouTube Data API v3 (required)
+   - ~~Google People API~~ — NOT needed, we get user identity from our own JWT
+4. Configure OAuth Consent Screen:
+   - User type: External
+   - Add test users (your own Google account) while in development
+   - App will stay in "Testing" mode until Google review
+5. Create credentials → OAuth 2.0 Client ID
    - Application type: Web application
    - Authorized redirect URIs:
      - `http://localhost:3000/api/v1/oauth/youtube/callback` (development)
      - `https://yourdomain.com/api/v1/oauth/youtube/callback` (production)
-5. Copy Client ID and Client Secret → add to Backend `.env`
+6. Copy Client ID and Client Secret → add to Backend `.env`
 
 ---
 
@@ -65,6 +91,10 @@ This single scope gives read access to:
 
 No write access requested — reduces friction on consent screen.
 
+⚠️ Note: YouTube Liked Videos (`playlistItems?playlistId=LL`) may require
+the user to have their liked videos set to public OR require app verification
+for the `youtube.readonly` scope. Test with your own account first.
+
 ---
 
 ## Backend Changes Required
@@ -80,80 +110,140 @@ GOOGLE_REDIRECT_URI=http://localhost:3000/api/v1/oauth/youtube/callback
 ### New package to install
 
 ```bash
+cd Backend
 npm install googleapis
 ```
 
 `googleapis` is Google's official Node.js client — handles token exchange,
-refresh, and API calls. No need to implement OAuth manually.
-([npm](https://www.npmjs.com/package/googleapis))
+refresh, and API calls automatically.
 
-### New Schema — store OAuth tokens per user
+### New Schema — `OAuthToken.schema.js`
 
 ```js
 // Backend/MongoDB/Models/OAuthToken.schema.js
 {
-  userId:        ObjectId (ref: User),
-  platform:      String   ('youtube'),
-  accessToken:   String,
-  refreshToken:  String,
-  expiresAt:     Date,
-  scope:         String
+  userId:        { type: ObjectId, ref: "User", required: true },
+  platform:      { type: String, enum: ["youtube"], required: true },
+  accessToken:   { type: String, required: true },
+  refreshToken:  { type: String, required: true },  // encrypt this
+  expiresAt:     { type: Date, required: true },
+  scope:         { type: String }
 }
+// Compound index — one token per user per platform
+OAuthTokenSchema.index({ userId: 1, platform: 1 }, { unique: true })
 ```
 
-Tokens are stored per user per platform. When access_token expires,
-use refresh_token to get a new one silently.
-
-### New Routes
+### New Routes — `oauth.routes.js`
 
 ```
-GET  /api/v1/oauth/youtube/connect    → generate consent URL, redirect user
-GET  /api/v1/oauth/youtube/callback   → exchange code for tokens, store them
-GET  /api/v1/oauth/youtube/status     → check if user has connected YouTube
-DELETE /api/v1/oauth/youtube/revoke   → disconnect YouTube, delete tokens
+GET    /api/v1/oauth/youtube/connect    → VerifyJWT + connect()
+GET    /api/v1/oauth/youtube/callback   → callback() — NO VerifyJWT (Google redirects here)
+GET    /api/v1/oauth/youtube/status     → VerifyJWT + status()
+DELETE /api/v1/oauth/youtube/revoke     → VerifyJWT + revoke()
+```
+
+⚠️ `callback` has no `VerifyJWT` — user is not logged in during redirect.
+Use the `state` parameter to carry the userId securely through the OAuth flow.
+
+### Register route in `app.js`
+
+```js
+import oauthRouter from "./Routes/oauth.routes.js"
+app.use("/api/v1/oauth", oauthRouter)
 ```
 
 ### New Controller — `OAuthController.js`
 
 ```
-connect()    → build Google OAuth URL with scopes, redirect
-callback()   → exchange code → get tokens → store in OAuthToken collection
-status()     → find OAuthToken for user → return { connected: true/false }
-revoke()     → delete OAuthToken, optionally call Google revoke endpoint
+connect()
+  → build state = sign JWT with { userId } using ACCESS_TOKEN_SECRET
+  → build Google OAuth URL with client_id, redirect_uri, scope, state
+  → res.redirect(googleOAuthUrl)
+
+callback()
+  → verify state parameter → extract userId
+  → exchange code for tokens using googleapis
+  → store/update OAuthToken document for this userId + platform
+  → res.redirect("http://localhost:5173/import?connected=true")
+
+status()
+  → find OAuthToken where { userId: req.user._id, platform: "youtube" }
+  → return { connected: true/false, expiresAt }
+
+revoke()
+  → delete OAuthToken document
+  → optionally call https://oauth2.googleapis.com/revoke
 ```
+
+---
+
+## Token Refresh Logic
+
+Before every YouTube API call, check if token is expired:
+
+```js
+const token = await OAuthToken.findOne({ userId, platform: "youtube" })
+
+if (Date.now() > token.expiresAt) {
+  // refresh silently
+  const { credentials } = await oauth2Client.refreshAccessToken()
+  await OAuthToken.findOneAndUpdate(
+    { userId, platform: "youtube" },
+    { accessToken: credentials.access_token, expiresAt: new Date(credentials.expiry_date) }
+  )
+}
+```
+
+Build this as a utility function — `getValidToken(userId)` — reused by all YouTube routes.
 
 ---
 
 ## Frontend Changes Required
 
-### New API function (`Frontend/api/oauthApi.js`)
+### New API file — `src/api/oauthApi.js`
 
 ```js
-getYoutubeStatus    → GET /oauth/youtube/status
-connectYoutube      → redirect window to /oauth/youtube/connect
-revokeYoutube       → DELETE /oauth/youtube/revoke
+// getYoutubeStatus — axios GET
+export const getYoutubeStatus = () => axiosService.get("/oauth/youtube/status")
+
+// connectYoutube — NOT axios, must use window.location redirect
+export const connectYoutube = () => {
+  window.location.href = "/api/v1/oauth/youtube/connect"
+}
+
+// revokeYoutube — axios DELETE
+export const revokeYoutube = () => axiosService.delete("/oauth/youtube/revoke")
 ```
 
-Note: `connectYoutube` uses `window.location.href` redirect, not axios,
-because it needs to navigate the browser to Google's consent screen.
+### New route in `App.jsx`
 
-### New UI (on Import page)
-
+```jsx
+// Protected — user must be logged in to import
+<Route element={<ProtectedRoute />}>
+  <Route path="/import" element={<ImportPage />} />
+</Route>
 ```
-[ Connect YouTube ]  ← button, redirects to Google consent
-Status: Connected ✓  ← shown after callback
-[ Disconnect ]       ← revoke button
+
+### Callback redirect handling in `ImportPage.jsx`
+
+After OAuth, Google redirects to backend which redirects to `/import?connected=true`.
+Check this query param on mount to show success message:
+
+```js
+const [searchParams] = useSearchParams()
+const justConnected = searchParams.get("connected") === "true"
 ```
 
 ---
 
-## Security Considerations
+## Security Checklist
 
-- Never expose `client_secret` to the frontend — all token exchange happens backend only
-- Store `refreshToken` encrypted in MongoDB (use `crypto` module or a library)
-- Use `state` parameter in OAuth URL to prevent CSRF attacks
-- Set token `expiresAt` and check before each API call — refresh proactively
-- Tokens are per-user — one user's tokens never touch another user's requests
+- [ ] Never expose `GOOGLE_CLIENT_SECRET` to frontend
+- [ ] Use `state` parameter (signed JWT) to prevent CSRF
+- [ ] Encrypt `refreshToken` before storing in MongoDB (use `crypto.createCipheriv`)
+- [ ] Always verify `state` in callback before processing
+- [ ] Check `expiresAt` before every YouTube API call
+- [ ] Tokens are scoped per user — never share between users
 
 ---
 
@@ -163,32 +253,30 @@ YouTube Data API v3 default quota: **10,000 units/day** per project.
 
 | Operation | Cost |
 |-----------|------|
-| `playlistItems.list` (fetch 50 videos) | 1 unit |
-| `videos.list` (get video details) | 1 unit |
-| `playlists.list` (get user playlists) | 1 unit |
+| `playlistItems.list` (50 videos) | 1 unit |
+| `videos.list` (50 video details) | 1 unit |
+| `playlists.list` | 1 unit |
 
-Fetching 2500 liked videos in batches of 50 = 50 API calls = 50 units.
-Getting full details for 2500 videos = 50 calls = 50 units.
-Total for one full import of 2500 videos ≈ **100-150 units** — well within limits.
-
-To increase quota: submit a quota extension request in Google Cloud Console
-(requires app review for sensitive scopes).
+Fetching + detailing 2500 liked videos ≈ **100 units total** — well within limits.
 
 ---
 
 ## Implementation Order
 
-1. Google Cloud Console setup + credentials
-2. Install `googleapis` package
-3. Create `OAuthToken` schema
-4. Implement `connect` and `callback` routes (core OAuth flow)
-5. Test consent screen → callback → tokens stored
-6. Implement `status` and `revoke` routes
-7. Add frontend connect/disconnect UI
-8. Proceed to Bulk Import implementation
+```
+1. Deploy app (backend + frontend)
+2. Google Cloud Console setup
+3. Install googleapis in Backend
+4. Create OAuthToken schema
+5. Write connect() + callback() — test full OAuth flow
+6. Write getValidToken() refresh utility
+7. Write status() + revoke()
+8. Add frontend oauthApi.js + connect UI on ImportPage
+9. Proceed to YouTube fetch in BULK_IMPORT_PLAN.md Phase 3
+```
 
 ---
 
 ## Status
 
-⬜ Not started — implement after core app is complete
+⬜ Not started — implement after core app is complete and deployed
