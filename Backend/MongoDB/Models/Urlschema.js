@@ -37,7 +37,7 @@ const urlschema = new mongoose.Schema(
     CategoriesbyDef: {
       type: String,
       default: "Personal",
-      enum: ["Personal", "Entertainment", "Knowledge", "Instagram",null],
+      enum: ["Personal", "Entertainment", "Knowledge", "Instagram", null],
     }, // either select from this or not so if customcat is not created or checked it should be default personal
     customTagId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -47,5 +47,5 @@ const urlschema = new mongoose.Schema(
   },
   { timestamps: true },
 );
-urlschema.index({ userId: 1, Linkdata: 1 }, { unique: true })
+urlschema.index({ userId: 1, Linkdata: 1 }, { unique: true });
 export const urldata = mongoose.model("urldata", urlschema);
