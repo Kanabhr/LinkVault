@@ -2,6 +2,7 @@
 // import VerifyJWT from Auth.middleware.js
 // import upload from Multer.middleware.js
 // import chromePreview and chromeConfirm from import.controller.js
+import { Router } from "express";
 
 // create a new Router instance
 
