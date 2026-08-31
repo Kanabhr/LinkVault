@@ -44,8 +44,29 @@ const urlschema = new mongoose.Schema(
       ref: "CustomTag", // points to the tag document
       default: null,
     },
+    platform:{
+      type: String,
+      default: "manual", enum: ["manual", "youtube", "chrome"]
+    },
+      title:{
+      type: String,
+      default: null 
+    },
+    mediatype:{
+      type: String,
+      default: "link"
+    },
+    importedAt:{
+      type: Date,
+      default: null
+    },
+    confidence:{
+      type: String,
+      default: null
+    }
   },
   { timestamps: true },
 );
 urlschema.index({ userId: 1, Linkdata: 1 }, { unique: true });
+
 export const urldata = mongoose.model("urldata", urlschema);

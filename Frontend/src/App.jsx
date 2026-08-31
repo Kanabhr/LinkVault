@@ -1,5 +1,4 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import "./App.css";
 
 // All Pages
 import LandingPage from "./Pages/LandingPage";
@@ -19,7 +18,6 @@ function App() {
   return (
     <Router>
       <Routes>
-
         {/* Public pages — accessible by everyone */}
         <Route path="/" element={<LandingPage />} />
         <Route path="/u/:username" element={<PublicProfile />} />
@@ -37,7 +35,6 @@ function App() {
           <Route path="/profile" element={<UserProfile />} />
           <Route path="/categories" element={<Categories />} />
         </Route>
-
       </Routes>
     </Router>
   );

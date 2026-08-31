@@ -1,19 +1,10 @@
-// import Router from express
-// import VerifyJWT from Auth.middleware.js
-// import upload from Multer.middleware.js
-// import chromePreview and chromeConfirm from import.controller.js
 import { Router } from "express";
+import { single } from "../Middleware/Multer.middleware.js";
+import { VerifyJWT } from "../Middleware/Auth.middleware.js";
+import { chromeConfirm, chromePreview } from "../Controllers/import.controller.js";
 
-// create a new Router instance
+const Routers = Router();
+Routers.route("/preview").post(single, chromePreview);
+Routers.route("/confirm").post(VerifyJWT, chromeConfirm);
 
-// POST /preview
-// middlewares: upload.single("bookmarkFile")
-// no VerifyJWT here — we are only parsing the file, not writing to DB
-// handler: chromePreview
-
-// POST /confirm
-// middlewares: VerifyJWT
-// no multer here — confirm receives a JSON array, not a file
-// handler: chromeConfirm
-
-// export default router
+export default Routers;
