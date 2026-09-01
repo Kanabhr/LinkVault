@@ -39,7 +39,7 @@ function AppSidebar({ user, logout }) {
       style={{ position:"fixed",top:0,left:0,bottom:0,width:260,zIndex:40,display:"flex",flexDirection:"column",padding:"20px 12px",borderRight:"1px solid var(--glass-border)",borderRadius:0,background:"rgb(10 10 14 / 0.72)",backdropFilter:"blur(32px) saturate(200%)",WebkitBackdropFilter:"blur(32px) saturate(200%)" }}
       role="navigation" aria-label="App navigation"
     >
-      <Link to="/" style={{ display:"flex",alignItems:"center",gap:8,textDecoration:"none",marginBottom:28,paddingLeft:4 }}>
+      <Link to="/dashboard" style={{ display:"flex",alignItems:"center",gap:8,textDecoration:"none",marginBottom:28,paddingLeft:4 }}>
         <div className="nav-logo-mark">B</div>
         <span style={{ fontSize:17,fontWeight:700,letterSpacing:"-0.02em",color:"var(--text-primary)" }}>BMS</span>
       </Link>
