@@ -35,11 +35,11 @@ function domainColor(url) {
 }
 
 export default function Dashboard() {
-  const [linkText,        setLinkText]        = useState("");
-  const [Customtag,       setCustomtag]       = useState("");
+  const [linkText,setLinkText] = useState("");
+  const [Customtag,setCustomtag] = useState("");
   const [selectedCategory,setSelectedCategory]= useState("Personal");
-  const [loading,         setLoading]         = useState(false);
-  const [error,           setError]           = useState("");
+  const [loading,setLoading] = useState(false);
+  const [error,setError] = useState("");
 
   const { user, logout } = useAuth();
   const { fetchlinks, addlinks, links, loading: linksLoading, error: linksError } = useLinks();

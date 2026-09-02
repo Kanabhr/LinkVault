@@ -106,7 +106,7 @@ export default function Categories() {
   const { user, logout } = useAuth();
   const reduce = useReducedMotion();
 
-  useEffect(() => { if (links.length === 0) fetchlinks(); }, [links.length, fetchlinks]);
+ useEffect(() => { fetchlinks(); }, []);
 
   const groupedByCategory = PRESET_CATEGORIES.reduce((acc, cat) => {
     acc[cat] = links.filter(l => l.CategoriesbyDef === cat);

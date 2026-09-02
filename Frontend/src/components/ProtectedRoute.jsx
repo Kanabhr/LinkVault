@@ -14,7 +14,7 @@ export default function ProtectedRoute() {
   // Without this, user gets kicked to /login on every page refresh
   // before getCurrentUser() has a chance to finish
   if (loading) {
-    return <p>Loading...</p>
+    return null
   }
 
   // Auth check done — no user found, send to login

@@ -107,7 +107,7 @@ export default function UserProfile() {
   const [editLoading,     setEditLoading]     = useState(false);
   const [editError,       setEditError]       = useState("");
 
-  useEffect(() => { if (links.length === 0) fetchlinks(); }, [links.length, fetchlinks]);
+  useEffect(() => { fetchlinks(); }, []);
 
   const filteredLinks = links
     .filter(l => l.Linkdata.toLowerCase().includes(searchTerm.toLowerCase()))

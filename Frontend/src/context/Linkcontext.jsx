@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useCallback, useContext, useState } from "react";
 import { getuserlinks, savelink , deletelink , deletetag ,editlink,edittag } from "../api/linkApi.js";
 
 export const LinkContext = createContext(null);
@@ -7,10 +7,10 @@ export function LinkProvider({ children }) {
 
 const [links ,setLinks] = useState([])
 const [customtags,setCustomtags] = useState([])
-const [loading,setLoading]= useState(true)
+const [loading,setLoading]= useState(false)
 const [error,setError]= useState(null)
 
- const fetchlinks = async () => {
+const fetchlinks = useCallback(async () => {
   setLoading(true)                                    // start loading
   try {
     const res = await getuserlinks()
@@ -25,7 +25,8 @@ const [error,setError]= useState(null)
   } finally {
     setLoading(false) // always runs, success or fail
   }
-}
+},[])
+ 
 
   const addlinks = async (data) => {
   
