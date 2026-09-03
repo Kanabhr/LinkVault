@@ -4,18 +4,13 @@ import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../context/Authcontext";
 import { motion, useReducedMotion } from "motion/react";
 import {
-  Bookmark, Plus, ExternalLink, User, Layers,
-  Globe, LayoutDashboard, LogOut, AlertCircle, Tag
+  Bookmark, Plus, ExternalLink,
+  AlertCircle, Tag
 } from "lucide-react";
 import "../styles/glass.css";
 import "@fontsource-variable/geist";
-
-// ─── Sidebar nav items ────────────────────────────────────────────────────
-const NAV_ITEMS = [
-  { to: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-  { to: "/profile",   icon: User,            label: "Profile"   },
-  { to: "/categories",icon: Layers,          label: "Categories"},
-];
+import GlassSelect from "../components/GlassSelect";
+import Sidebar from "../components/Sidebar";
 
 // ─── Initials + color from URL ────────────────────────────────────────────
 const DOMAIN_COLORS = ["#1a1a2e","#1a0d0d","#0d0d1a","#0d1a16","#1a160d","#101a1a"];
@@ -41,7 +36,7 @@ export default function Dashboard() {
   const [loading,setLoading] = useState(false);
   const [error,setError] = useState("");
 
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const { fetchlinks, addlinks, links, loading: linksLoading, error: linksError } = useLinks();
   const location = useLocation();
   const reduce   = useReducedMotion();
@@ -72,95 +67,12 @@ export default function Dashboard() {
     <div style={{ position:"relative", minHeight:"100dvh", display:"flex" }}>
       <div className="page-bg" aria-hidden="true" />
 
-      {/* ── Sidebar ───────────────────────────────────────────────────── */}
-      <aside
-        className="glass-strong"
-        style={{
-          position:"fixed", top:0, left:0, bottom:0, width:260,
-          zIndex:40, display:"flex", flexDirection:"column", padding:"20px 12px",
-          borderRight:"1px solid var(--glass-border)", borderRadius:0,
-          background:"rgb(10 10 14 / 0.72)",
-          backdropFilter:"blur(32px) saturate(200%)",
-          WebkitBackdropFilter:"blur(32px) saturate(200%)",
-        }}
-        role="navigation" aria-label="App navigation"
-      >
-        {/* Logo */}
-        <Link to="/dashboard" style={{ display:"flex",alignItems:"center",gap:8,textDecoration:"none",marginBottom:28,paddingLeft:4 }}>
-          <div className="nav-logo-mark">B</div>
-          <span style={{ fontSize:17,fontWeight:700,letterSpacing:"-0.02em",color:"var(--text-primary)" }}>BMS</span>
-        </Link>
-
-        {/* Nav items */}
-        <nav style={{ display:"flex",flexDirection:"column",gap:4,flex:1 }}>
-          {NAV_ITEMS.map(({ to, icon: Icon, label }) => {
-            const active = location.pathname === to;
-            return (
-              <Link key={to} to={to} style={{ textDecoration:"none" }}>
-                <div
-                  className={active ? "glass r-md" : "r-md"}
-                  style={{
-                    display:"flex", alignItems:"center", gap:10, padding:"10px 12px",
-                    color: active ? "var(--text-primary)" : "var(--text-secondary)",
-                    background: active ? "var(--glass-bg-default)" : "transparent",
-                    borderRadius:"var(--r-md)",
-                    transition:"background var(--dur-base) var(--ease-out), color var(--dur-base) var(--ease-out)",
-                    cursor:"pointer",
-                  }}
-                >
-                  <Icon size={16} strokeWidth={active ? 2.2 : 1.75}
-                    color={active ? "var(--accent)" : "var(--text-secondary)"} />
-                  <span style={{ fontSize:14,fontWeight: active ? 600 : 500 }}>{label}</span>
-                  {active && <div style={{ marginLeft:"auto",width:5,height:5,borderRadius:"50%",background:"var(--accent)" }} />}
-                </div>
-              </Link>
-            );
-          })}
-
-          <a href={`/u/${user?.username}`} target="_blank" rel="noreferrer" style={{ textDecoration:"none" }}>
-            <div className="r-md" style={{
-              display:"flex",alignItems:"center",gap:10,padding:"10px 12px",
-              color:"var(--text-secondary)",cursor:"pointer",borderRadius:"var(--r-md)",
-              transition:"background var(--dur-base) var(--ease-out)",
-            }}>
-              <Globe size={16} strokeWidth={1.75} />
-              <span style={{ fontSize:14,fontWeight:500 }}>Public Profile</span>
-              <ExternalLink size={12} strokeWidth={1.75} style={{ marginLeft:"auto",opacity:0.5 }} />
-            </div>
-          </a>
-        </nav>
-
-        {/* User + logout */}
-        <div style={{ borderTop:"1px solid var(--glass-border)",paddingTop:12 }}>
-          <div className="glass-subtle r-md" style={{ display:"flex",alignItems:"center",gap:10,padding:"10px 12px",marginBottom:8 }}>
-            <div style={{
-              width:32,height:32,borderRadius:"50%",background:"var(--accent-dim)",
-              border:"1px solid rgb(255 49 98 / 0.28)",display:"flex",alignItems:"center",
-              justifyContent:"center",flexShrink:0,fontSize:12,fontWeight:700,color:"var(--accent)"
-            }}>
-              {user?.username?.[0]?.toUpperCase() ?? "U"}
-            </div>
-            <div style={{ minWidth:0,flex:1 }}>
-              <p style={{ fontSize:13,fontWeight:600,color:"var(--text-primary)",lineHeight:1.2,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap" }}>
-                {user?.username}
-              </p>
-            </div>
-          </div>
-          <button
-            onClick={logout}
-            className="btn-ghost full"
-            style={{ height:38,fontSize:13,gap:8,justifyContent:"center" }}
-          >
-            <LogOut size={14} strokeWidth={1.75} />
-            Sign out
-          </button>
-        </div>
-      </aside>
+      <Sidebar />
 
       {/* ── Main content ──────────────────────────────────────────────── */}
       <main
         role="main"
-        style={{ flex:1, marginLeft:260, position:"relative", zIndex:1, padding:"32px 32px 64px" }}
+        style={{ flex:1, minWidth:0, position:"relative", zIndex:1, padding:"32px 32px 64px" }}
       >
         {/* Page header */}
         <motion.div
@@ -215,23 +127,16 @@ export default function Dashboard() {
             <div style={{ display:"grid",gridTemplateColumns:"1fr 1fr",gap:12 }}>
               <div className="field">
                 <label htmlFor="category" className="field-label">Category</label>
-                <div className="input-wrapper">
-                  <span className="input-icon" aria-hidden="true">
-                    <Layers size={15} strokeWidth={1.75} />
-                  </span>
-                  <select
-                    id="category"
-                    className="input-glass"
-                    value={selectedCategory}
-                    onChange={(e) => setSelectedCategory(e.target.value)}
-                    style={{ paddingLeft:38,cursor:"pointer" }}
-                  >
-                    <option value="Personal">Personal</option>
-                    <option value="Entertainment">Entertainment</option>
-                    <option value="Knowledge">Knowledge</option>
-                    <option value="Instagram">Instagram</option>
-                  </select>
-                </div>
+                <GlassSelect
+                  value={selectedCategory}
+                  onChange={setSelectedCategory}
+                  options={["Personal","Entertainment","Knowledge","Instagram"]}
+                  aria-label="Select category"
+                  height={48}
+                  fontSize={14}
+                  icon={<Layers size={15} strokeWidth={1.75} />}
+                  style={{ width: "100%" }}
+                />
               </div>
 
               <div className="field">

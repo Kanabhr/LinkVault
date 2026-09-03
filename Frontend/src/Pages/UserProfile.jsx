@@ -4,11 +4,13 @@ import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motion, useReducedMotion } from "motion/react";
 import {
-  Bookmark, Search, ExternalLink, Pencil, Trash2, Globe,
-  User, Layers, LayoutDashboard, LogOut, Check, X, AlertCircle
+  Bookmark, Search, ExternalLink, Pencil, Trash2,
+  User, Layers, LayoutDashboard, Check, X, AlertCircle
 } from "lucide-react";
 import "../styles/glass.css";
 import "@fontsource-variable/geist";
+import GlassSelect from "../components/GlassSelect";
+import Sidebar from "../components/Sidebar";
 
 const NAV_ITEMS = [
   { to: "/dashboard",  icon: LayoutDashboard, label: "Dashboard"  },
@@ -310,18 +312,14 @@ export default function UserProfile() {
                         placeholder="URL"
                         aria-label="Edit URL"
                       />
-                      <select
-                        className="input-glass"
-                        style={{ height:40,fontSize:13,width:150,cursor:"pointer" }}
+                      <GlassSelect
                         value={editCategory}
-                        onChange={(e) => setEditCategory(e.target.value)}
+                        onChange={setEditCategory}
+                        options={["Personal","Entertainment","Knowledge","Instagram"]}
                         aria-label="Edit category"
-                      >
-                        <option value="Personal">Personal</option>
-                        <option value="Entertainment">Entertainment</option>
-                        <option value="Knowledge">Knowledge</option>
-                        <option value="Instagram">Instagram</option>
-                      </select>
+                        height={40}
+                        fontSize={13}
+                      />
                     </div>
                     {editError && (
                       <div className="error-banner" role="alert">

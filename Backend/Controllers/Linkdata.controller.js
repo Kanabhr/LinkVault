@@ -36,7 +36,13 @@ if (Customcat) {
   if (!savedata) {
     throw new ApiError(400, "Error occured while saving links");
   }
-  return res.status(200).json(new ApiResponse(200, savedata, "Link Saved"));
+
+  // populate customTagId so frontend gets full tag object — prevents stale UI
+  const populatedSave = await urldata
+    .findById(savedata._id)
+    .populate("customTagId")
+
+  return res.status(200).json(new ApiResponse(200, populatedSave, "Link Saved"));
 });
 // in mongo when using create we need only to include required: true fields defined in schema
 const EditLinkdata = AsyncHandler(async (req, res) => {

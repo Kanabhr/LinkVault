@@ -11,6 +11,15 @@ app.use(
     credentials: true,
   }),
 );
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ extended: true, limit: "10mb" }));
+app.use(express.static("public"));
+app.use(cookieParser());
+// Routes here
+app.use("/api/v1/users", userRouter);
+app.use("/api/v1/Linkdata", linkdataRouter);
+app.use("/api/v1/import/chrome",importRouter)
+//middleware error handling
 app.use((err, req, res, next) => {
   const statusCode = err.statuscode || 500
   res.status(statusCode).json({
@@ -18,12 +27,4 @@ app.use((err, req, res, next) => {
     message: err.message || "Internal Server Error"
   })
 })
-app.use(express.json({ limit: "16kb" }));
-app.use(express.urlencoded({ extended: true, limit: "16kb" }));
-app.use(express.static("public"));
-app.use(cookieParser());
-// Routes here
-app.use("/api/v1/users", userRouter);
-app.use("/api/v1/Linkdata", linkdataRouter);
-app.use("/api/v1/import/chrome",importRouter)
 export { app };

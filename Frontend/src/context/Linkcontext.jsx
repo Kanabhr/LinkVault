@@ -29,10 +29,13 @@ const fetchlinks = useCallback(async () => {
  
 
   const addlinks = async (data) => {
-  
   const res = await savelink(data)
   const newlink = res.data.data
-  setLinks(prev => [newlink,...prev])
+  if(data.Customcat){
+    await fetchlinks()
+  }else{
+     setLinks(prev => [newlink,...prev])
+  }
   
   }
   const removelink = async (id) => {

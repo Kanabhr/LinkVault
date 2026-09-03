@@ -9,7 +9,7 @@ import UserProfile from "./Pages/UserProfile";
 import Categories from "./Pages/Categories";
 import PublicProfile from "./Pages/PublicProfile";
 import Notfound from "./Pages/Notfound";
-
+import ImportPage from "./Pages/ImportPage";
 // Route guards
 import ProtectedRoute from "./components/ProtectedRoute";
 import PublicRoute from "./components/PublicRoute";
@@ -34,6 +34,7 @@ function App() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/profile" element={<UserProfile />} />
           <Route path="/categories" element={<Categories />} />
+          <Route path="/import" element={<ImportPage/>} />
         </Route>
       </Routes>
     </Router>
