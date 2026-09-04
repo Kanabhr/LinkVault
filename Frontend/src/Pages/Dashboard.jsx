@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { useLinks } from "../context/Linkcontext";
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useAuth } from "../context/Authcontext";
 import { motion, useReducedMotion } from "motion/react";
 import {
   Bookmark, Plus, ExternalLink,
-  AlertCircle, Tag
+  AlertCircle, Tag , Layers
 } from "lucide-react";
 import "../styles/glass.css";
 import "@fontsource-variable/geist";
@@ -38,7 +38,6 @@ export default function Dashboard() {
 
   const { user } = useAuth();
   const { fetchlinks, addlinks, links, loading: linksLoading, error: linksError } = useLinks();
-  const location = useLocation();
   const reduce   = useReducedMotion();
 
   useEffect(() => { fetchlinks(); }, []);
@@ -134,6 +133,7 @@ export default function Dashboard() {
                   aria-label="Select category"
                   height={48}
                   fontSize={14}
+                  id="category"
                   icon={<Layers size={15} strokeWidth={1.75} />}
                   style={{ width: "100%" }}
                 />

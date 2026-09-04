@@ -1,5 +1,5 @@
 import multer from "multer";
-function fileFilter(req, file, cb) {
+function fileFilter(_req, file, cb) {
   if (file.mimetype === "text/html") {
     cb(null, true);
   } else {

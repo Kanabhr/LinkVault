@@ -3,7 +3,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import userRouter from "./Routes/User.routes.js";
 import linkdataRouter from "./Routes/Linkdata.routes.js";
-import importRouter from "./Routes/import.routes.js"
+import importRouter from "./Routes/import.routes.js";
 const app = express();
 app.use(
   cors({
@@ -18,13 +18,13 @@ app.use(cookieParser());
 // Routes here
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/Linkdata", linkdataRouter);
-app.use("/api/v1/import/chrome",importRouter)
+app.use("/api/v1/import/chrome", importRouter);
 //middleware error handling
-app.use((err, req, res, next) => {
-  const statusCode = err.statuscode || 500
+app.use((err, _req, res, _next) => {
+  const statusCode = err.statusCode || 500;
   res.status(statusCode).json({
     success: false,
-    message: err.message || "Internal Server Error"
-  })
-})
+    message: err.message || "Internal Server Error",
+  });
+});
 export { app };

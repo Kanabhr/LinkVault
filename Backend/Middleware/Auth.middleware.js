@@ -1,9 +1,8 @@
 import { ApiError } from "../Utils/ApiError.js";
-import { ApiResponse } from "../Utils/ApiResponse.js";
 import { AsyncHandler } from "../Utils/AsyncHandler.js";
 import { User } from "../MongoDB/Models/UserSchema.js";
 import jwt from "jsonwebtoken";
-const VerifyJWT = AsyncHandler(async (req, res, next) => {
+const VerifyJWT = AsyncHandler(async (req, _res, next) => {
   try {
     const Token = req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer ", "");
     if (!Token) {

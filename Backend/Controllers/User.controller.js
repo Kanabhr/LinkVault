@@ -61,14 +61,16 @@ const LoginUser = AsyncHandler(async (req, res) => {
   if (!IsPasswordCorrect) {
     throw new ApiError(401, "Wrong user credentials entered");
   }
-  const safeUser = await User.findById(CheckUser._id).select("-password -RefreshToken")
+  const safeUser = await User.findById(CheckUser._id).select("-password -RefreshToken");
   const { accesstoken, refreshtoken } = await generateAccessandRefreshToken(CheckUser._id);
   const Cookieoptions = {
     httpOnly: true,
-    secure: true,
+    secure: process.env.NODE_ENV === "production"
+
   };
   return res.status(200).cookie("accessToken", accesstoken, Cookieoptions).cookie("refreshToken", refreshtoken, Cookieoptions).json({
-    message: "User Logged In", user : safeUser
+    message: "User Logged In",
+    user: safeUser,
   });
 });
 const LogoutUser = AsyncHandler(async (req, res) => {
@@ -81,7 +83,8 @@ const LogoutUser = AsyncHandler(async (req, res) => {
   );
   const Cookieoptions = {
     httpOnly: true,
-    secure: true,
+    secure: process.env.NODE_ENV === "production"
+
   };
   return res
     .status(200)
@@ -94,7 +97,7 @@ const UserProfile = AsyncHandler(async (req, res) => {
   res.status(200).json(new ApiResponse(200, { UserLinks }, "User data fetched"));
 });
 const getCurrentUser = AsyncHandler(async (req, res) => {
-  res.status(200).json(new ApiResponse(200, req.user, "User fetched"))
-})
+  res.status(200).json(new ApiResponse(200, req.user, "User fetched"));
+});
 
-export { RegisterUser, LoginUser, UserProfile, LogoutUser ,getCurrentUser};
+export { RegisterUser, LoginUser, UserProfile, LogoutUser, getCurrentUser };
