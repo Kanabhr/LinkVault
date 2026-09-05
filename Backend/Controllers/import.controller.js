@@ -7,16 +7,171 @@ import { categorizeWithGemini } from "../Utils/GeminiApi.js";
 
 export const URL_CATEGORY_MAP = [
   {
-    patterns: ["youtube.com", "twitch.tv", "netflix.com", "aniwatch", "animekai", "nexusmods.com", "skyrimmods", "modbooru", "f95zone", "soap2day", "vegamovies", "moviesmod", "cineb", "fitgirl", "gogames", "gamesnostalgia", "pcquest.com", "gamesradar"],
-    category: "Entertainment",
+    // Gaming — mods, wikis, game stores, gaming news
+    patterns: [
+      "nexusmods.com", "moddb.com", "curseforge.com", "modrinth.com",
+      "store.steampowered.com", "gog.com", "epicgames.com", "g2a.com",
+      "ign.com", "pcgamer.com", "gamesradar.com", "kotaku.com", "gamespot.com",
+      "skyrimmods", "modbooru", "f95zone", "fitgirl", "gogames", "gamesnostalgia",
+      "howlongtobeat.com", "backloggd.com", "rawg.io", "isthereanydealdeal.com",
+    ],
+    category: "gaming",
   },
   {
-    patterns: ["github.com", "stackoverflow.com", "w3schools.com", "mdn", "udemy.com", "datacamp.com", "simplilearn.com", "geeksforgeeks", "codedamn.com", "w3resource.com", "mongodb.com", "dev.to", "hashnode.dev", "medium.com", "freecodecamp", "theodinproject", "codecombat", "unity.com", "vercel.com", "nextjs.org"],
-    category: "Knowledge",
+    // Anime — streaming, manga, visual novels
+    patterns: [
+      "aniwatch", "animekai", "crunchyroll.com", "funimation.com",
+      "myanimelist.net", "anilist.co", "mangadex.org", "mangakakalot",
+      "animefrenzy", "9anime", "zoro.to", "gogoanime",
+      "vndb.org", "novelupdates.com",
+    ],
+    category: "anime",
   },
   {
-    patterns: ["instagram.com"],
-    category: "Instagram",
+    // Documentation — official API and SDK docs
+    patterns: [
+      "docs.", "/docs/", "/documentation/", "/api/", "/reference/",
+      "jwt.io", "mongoosejs.com", "expressjs.com/en",
+      "nodejs.org/en/docs", "nodejs.org/api",
+      "vitejs.dev", "tailwindcss.com/docs",
+      "reactrouter.com", "react.dev",
+      "developer.mozilla.org", "web.dev",
+      "swagger.io", "postman.com/docs",
+      "firebase.google.com/docs", "cloud.google.com/docs",
+      "aws.amazon.com/documentation",
+    ],
+    category: "documentation",
+  },
+  {
+    // Coding — developer platforms, repos, package registries
+    patterns: [
+      "github.com", "gitlab.com", "bitbucket.org",
+      "stackoverflow.com", "stackexchange.com",
+      "npmjs.com", "pypi.org", "packagist.org", "crates.io",
+      "codepen.io", "codesandbox.io", "replit.com", "jsfiddle.net",
+      "leetcode.com", "hackerrank.com", "codeforces.com",
+      "dev.to", "hashnode.dev", "medium.com/@",
+    ],
+    category: "coding",
+  },
+  {
+    // Tutorial / Learning
+    patterns: [
+      "udemy.com", "coursera.org", "edx.org", "pluralsight.com",
+      "freecodecamp.org", "theodinproject.com", "codecombat.com",
+      "w3schools.com", "w3resource.com", "geeksforgeeks.org",
+      "datacamp.com", "simplilearn.com", "skillshare.com",
+      "lynda.com", "linkedin.com/learning",
+    ],
+    category: "tutorial",
+  },
+  {
+    // Tools — productivity, dev tools, SaaS
+    patterns: [
+      "notion.so", "obsidian.md", "roamresearch.com",
+      "figma.com", "canva.com", "sketch.com",
+      "postman.com", "insomnia.rest",
+      "trello.com", "linear.app", "jira.atlassian.com",
+      "vercel.com", "netlify.com", "render.com",
+      "cloudflare.com", "railway.app",
+      "excalidraw.com", "whimsical.com", "miro.com",
+    ],
+    category: "tools",
+  },
+  {
+    // Video
+    patterns: [
+      "youtube.com", "youtu.be", "twitch.tv",
+      "vimeo.com", "dailymotion.com",
+      "vegamovies", "moviesmod", "cineb", "soap2day",
+    ],
+    category: "video",
+  },
+  {
+    // Entertainment — streaming services, movies, TV
+    patterns: [
+      "netflix.com", "primevideo.com", "hotstar.com",
+      "hbomax.com", "disneyplus.com", "apple.tv",
+      "imdb.com", "letterboxd.com", "rottentomatoes.com",
+      "9to5mac.com", "theverge.com",
+    ],
+    category: "entertainment",
+  },
+  {
+    // Social
+    patterns: [
+      "reddit.com", "twitter.com", "x.com", "threads.net",
+      "linkedin.com", "facebook.com", "instagram.com",
+      "discord.com", "discord.gg", "telegram.org",
+      "mastodon", "bluesky.app",
+    ],
+    category: "social",
+  },
+  {
+    // News
+    patterns: [
+      "bbc.com", "cnn.com", "reuters.com", "apnews.com",
+      "techcrunch.com", "theverge.com", "wired.com",
+      "news.ycombinator.com", "hackernews",
+      "ndtv.com", "timesofindia", "hindustantimes.com",
+    ],
+    category: "news",
+  },
+  {
+    // Finance
+    patterns: [
+      "tradingview.com", "investing.com", "bloomberg.com",
+      "coinmarketcap.com", "coingecko.com", "binance.com",
+      "zerodha.com", "groww.in", "etmoney.com",
+      "moneycontrol.com", "economictimes",
+    ],
+    category: "finance",
+  },
+  {
+    // Shopping
+    patterns: [
+      "amazon.com", "amazon.in", "flipkart.com",
+      "ebay.com", "etsy.com", "aliexpress.com",
+      "myntra.com", "meesho.com", "nykaa.com",
+      "shopify.com",
+    ],
+    category: "shopping",
+  },
+  {
+    // Music
+    patterns: [
+      "spotify.com", "soundcloud.com", "music.apple.com",
+      "genius.com", "last.fm", "bandcamp.com",
+      "gaana.com", "jiosaavn.com",
+    ],
+    category: "music",
+  },
+  {
+    // Health
+    patterns: [
+      "webmd.com", "healthline.com", "mayoclinic.org",
+      "myfitnesspal.com", "nike.com/ntc",
+      "practo.com", "1mg.com",
+    ],
+    category: "health",
+  },
+  {
+    // Sports
+    patterns: [
+      "espn.com", "cricbuzz.com", "espncricinfo.com",
+      "sofascore.com", "bbc.com/sport", "goal.com",
+      "nba.com", "icc-cricket.com",
+    ],
+    category: "sports",
+  },
+  {
+    // Design
+    patterns: [
+      "dribbble.com", "behance.net", "awwwards.com",
+      "css-tricks.com", "smashingmagazine.com",
+      "ui8.net", "mobbin.com", "land-book.com",
+    ],
+    category: "design",
   },
 ];
 
