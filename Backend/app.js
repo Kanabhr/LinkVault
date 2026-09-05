@@ -6,10 +6,19 @@ import linkdataRouter from "./Routes/Linkdata.routes.js";
 import importRouter from "./Routes/import.routes.js";
 const app = express();
 app.use(
-  cors({
-    origin: process.env.CORS_ORIGIN,
-    credentials: true,
-  }),
+ cors({
+  origin: function(origin, callback) {
+    const allowed = process.env.CORS_ORIGIN
+    // allow requests with no origin (mobile apps, curl, Postman)
+    if (!origin) return callback(null, true)
+    if (allowed === "*" || allowed === origin) {
+      return callback(null, true)
+    }
+    callback(new Error("Not allowed by CORS"))
+  },
+  credentials: true,
+})
+
 );
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
