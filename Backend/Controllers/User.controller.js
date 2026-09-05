@@ -65,8 +65,8 @@ const LoginUser = AsyncHandler(async (req, res) => {
   const { accesstoken, refreshtoken } = await generateAccessandRefreshToken(CheckUser._id);
   const Cookieoptions = {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production"
-
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
   };
   return res.status(200).cookie("accessToken", accesstoken, Cookieoptions).cookie("refreshToken", refreshtoken, Cookieoptions).json({
     message: "User Logged In",
@@ -83,8 +83,8 @@ const LogoutUser = AsyncHandler(async (req, res) => {
   );
   const Cookieoptions = {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production"
-
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
   };
   return res
     .status(200)
