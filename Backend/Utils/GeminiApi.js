@@ -1,8 +1,10 @@
 import { GoogleGenAI } from "@google/genai";
 
+  const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+
 export const categorizeWithGemini = async (links) => {
 
-  const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+if(!links || links.length === 0) return []
 
   try {
     const numberedURLstring = links

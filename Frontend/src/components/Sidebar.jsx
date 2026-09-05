@@ -1,4 +1,4 @@
-import {  useState, useEffect, useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard, User, Layers, Upload,
@@ -6,7 +6,6 @@ import {
 } from "lucide-react";
 import { useAuth } from "../context/Authcontext";
 
-// ─── All nav items defined once here ────────────────────────────────────────
 const NAV_ITEMS = [
   { to: "/dashboard",  icon: LayoutDashboard, label: "Dashboard"  },
   { to: "/profile",    icon: User,            label: "Profile"    },
@@ -30,12 +29,10 @@ export default function Sidebar() {
   const [isDragging, setIsDragging] = useState(false);
   const collapsed = width <= COLLAPSED_WIDTH + 10;
 
-  // ── Persist width ─────────────────────────────────────────────────────────
   useEffect(() => {
     if (!isDragging) localStorage.setItem("sidebarWidth", width);
   }, [width, isDragging]);
 
-  // ── Drag resize ──────────────────────────────────────────────────────────
   const handleMouseDown = useCallback((e) => {
     e.preventDefault();
     setIsDragging(true);
@@ -43,19 +40,15 @@ export default function Sidebar() {
 
   useEffect(() => {
     if (!isDragging) return;
-    const onMove = (e) => {
-      setWidth(Math.min(MAX_WIDTH, Math.max(MIN_WIDTH, e.clientX)));
-    };
-    const onUp = () => {
-      setIsDragging(false);
-    };
+    const onMove = (e) => setWidth(Math.min(MAX_WIDTH, Math.max(MIN_WIDTH, e.clientX)));
+    const onUp   = () => setIsDragging(false);
     document.addEventListener("mousemove", onMove);
-    document.addEventListener("mouseup", onUp);
+    document.addEventListener("mouseup",  onUp);
     document.body.style.cursor     = "col-resize";
     document.body.style.userSelect = "none";
     return () => {
       document.removeEventListener("mousemove", onMove);
-      document.removeEventListener("mouseup", onUp);
+      document.removeEventListener("mouseup",  onUp);
       document.body.style.cursor     = "";
       document.body.style.userSelect = "";
     };
@@ -68,7 +61,9 @@ export default function Sidebar() {
 
   return (
     <>
-      {/* ── Fixed sidebar panel ──────────────────────────────────────── */}
+      {/* ════════════════════════════════════════════════════════
+          DESKTOP SIDEBAR — hidden on mobile via CSS
+          ════════════════════════════════════════════════════════ */}
       <aside
         className="glass-strong"
         style={{
@@ -191,7 +186,7 @@ export default function Sidebar() {
           </button>
         </div>
 
-        {/* ── Drag handle ───────────────────────────────────────────── */}
+        {/* Drag handle */}
         <div
           onMouseDown={handleMouseDown}
           style={{
@@ -206,8 +201,9 @@ export default function Sidebar() {
         />
       </aside>
 
-      {/* ── Spacer keeps main content from going under sidebar ────────── */}
+      {/* Desktop spacer — hidden on mobile via CSS class */}
       <div
+        className="desktop-sidebar-spacer"
         style={{
           width,
           flexShrink: 0,
@@ -215,6 +211,43 @@ export default function Sidebar() {
         }}
         aria-hidden="true"
       />
+
+      {/* ════════════════════════════════════════════════════════
+          MOBILE TOP HEADER — visible only on mobile via CSS
+          ════════════════════════════════════════════════════════ */}
+      <header className="mobile-header" role="banner">
+        <Link to="/dashboard" className="mobile-header-logo">
+          <div className="nav-logo-mark" style={{ width: 24, height: 24, fontSize: 11 }}>B</div>
+          BMS
+        </Link>
+        <Link
+          to="/profile"
+          className="mobile-header-avatar"
+          aria-label="My profile"
+        >
+          {user?.username?.[0]?.toUpperCase() ?? "U"}
+        </Link>
+      </header>
+
+      {/* ════════════════════════════════════════════════════════
+          MOBILE BOTTOM NAV — visible only on mobile via CSS
+          ════════════════════════════════════════════════════════ */}
+      <nav className="mobile-bottom-nav" role="navigation" aria-label="Mobile navigation">
+        {NAV_ITEMS.map(({ to, icon: Icon, label }) => {
+          const active = location.pathname === to;
+          return (
+            <Link
+              key={to}
+              to={to}
+              className={`mobile-nav-item${active ? " active" : ""}`}
+              aria-current={active ? "page" : undefined}
+            >
+              <Icon size={20} strokeWidth={active ? 2.2 : 1.75} />
+              <span>{label}</span>
+            </Link>
+          );
+        })}
+      </nav>
     </>
   );
 }

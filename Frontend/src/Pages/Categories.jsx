@@ -1,17 +1,14 @@
 import { useEffect } from "react";
 import { useLinks } from "../context/Linkcontext";
 import { motion, useReducedMotion } from "motion/react";
-import {
-  Layers, Tag, ExternalLink, AlertCircle
-} from "lucide-react";
+import { Layers, Tag, ExternalLink, AlertCircle } from "lucide-react";
 import "../styles/glass.css";
 import "@fontsource-variable/geist";
-
 import Sidebar from "../components/Sidebar";
 
 const PRESET_CATEGORIES = ["Personal","Entertainment","Knowledge","Instagram"];
-
 const DOMAIN_COLORS = ["#1a1a2e","#1a0d0d","#0d0d1a","#0d1a16","#1a160d","#101a1a"];
+
 function getInitials(url) {
   try { return new URL(url).hostname.replace("www.","").slice(0,2).toUpperCase(); }
   catch { return "??" }
@@ -51,7 +48,7 @@ export default function Categories() {
   const { links, customtags, loading, error, fetchlinks } = useLinks();
   const reduce = useReducedMotion();
 
- useEffect(() => { fetchlinks(); }, []);
+  useEffect(() => { fetchlinks(); }, []);
 
   const groupedByCategory = PRESET_CATEGORIES.reduce((acc, cat) => {
     acc[cat] = links.filter(l => l.CategoriesbyDef === cat);
@@ -64,11 +61,11 @@ export default function Categories() {
   }, {});
 
   return (
-    <div style={{ position:"relative",minHeight:"100dvh",display:"flex" }}>
+    <div style={{ position:"relative",minHeight:"100dvh",display:"flex",overflowX:"hidden" }}>
       <div className="page-bg" aria-hidden="true" />
       <Sidebar />
 
-      <main role="main" style={{ flex:1,minWidth:0,position:"relative",zIndex:1,padding:"32px 32px 64px" }}>
+      <main role="main" className="app-main" style={{ flex:1,minWidth:0,position:"relative",zIndex:1,padding:"32px 32px 64px" }}>
         <motion.div
           {...(reduce ? {} : { initial:{opacity:0,y:16},animate:{opacity:1,y:0},transition:{duration:0.5,ease:[0.16,1,0.3,1]} })}
           style={{ marginBottom:28 }}
@@ -93,7 +90,7 @@ export default function Categories() {
           <h2 style={{ fontSize:13,fontWeight:600,color:"var(--text-secondary)",letterSpacing:"0.07em",textTransform:"uppercase",marginBottom:16 }}>
             Preset Categories
           </h2>
-          <div style={{ display:"grid",gridTemplateColumns:"repeat(2,1fr)",gap:14 }}>
+          <div className="categories-grid" style={{ display:"grid",gridTemplateColumns:"repeat(2,1fr)",gap:14 }}>
             {PRESET_CATEGORIES.map((cat, ci) => (
               <motion.div
                 key={cat}
@@ -103,7 +100,7 @@ export default function Categories() {
               >
                 <div style={{ display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:14 }}>
                   <div style={{ display:"flex",alignItems:"center",gap:8 }}>
-                    <div style={{ width:32,height:32,borderRadius:8,background:"var(--glass-bg-default)",border:"1px solid var(--glass-border)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:14 }}>
+                    <div style={{ width:32,height:32,borderRadius:8,background:"var(--glass-bg-default)",border:"1px solid var(--glass-border)",display:"flex",alignItems:"center",justifyContent:"center" }}>
                       <Layers size={15} strokeWidth={1.75} color="var(--accent)" />
                     </div>
                     <span style={{ fontSize:14,fontWeight:650,color:"var(--text-primary)" }}>{cat}</span>
@@ -153,7 +150,7 @@ export default function Categories() {
               <p style={{ fontSize:13,color:"var(--text-muted)" }}>Use the custom tag field on Dashboard when saving a bookmark</p>
             </div>
           ) : (
-            <div style={{ display:"grid",gridTemplateColumns:"repeat(2,1fr)",gap:14 }}>
+            <div className="categories-grid" style={{ display:"grid",gridTemplateColumns:"repeat(2,1fr)",gap:14 }}>
               {customtags.map((tag, ti) => (
                 <motion.div
                   key={tag._id}
@@ -192,18 +189,7 @@ export default function Categories() {
         </div>
       </main>
 
-      <style>{`
-        @keyframes spin { to { transform: rotate(360deg); } }
-        @media (max-width: 768px) {
-          aside { transform: translateX(-100%); }
-          main[role="main"] { margin-left: 0 !important; padding: 80px 16px 48px !important; }
-        }
-        @media (max-width: 900px) {
-          main[role="main"] > div > div[style*="grid-template-columns: repeat(2"] {
-            grid-template-columns: 1fr !important;
-          }
-        }
-      `}</style>
+      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </div>
   );
 }

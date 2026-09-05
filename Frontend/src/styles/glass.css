@@ -560,3 +560,228 @@ body {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   MOBILE RESPONSIVE — max-width: 768px
+   Desktop styles above are untouched.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ─── Mobile top header ──────────────────────────────────────────────────── */
+.mobile-header {
+  display: none;
+}
+
+/* ─── Mobile bottom nav ──────────────────────────────────────────────────── */
+.mobile-bottom-nav {
+  display: none;
+}
+
+/* ─── Category filter scroll row (mobile) ───────────────────────────────── */
+.cat-filter-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* ─── Import stepper labels ──────────────────────────────────────────────── */
+.step-label {
+  display: inline;
+}
+
+@media (max-width: 768px) {
+
+  /* ── Body & root ──────────────────────────────────────────────────────── */
+  body {
+    overflow-x: hidden;
+  }
+
+  /* ── Hide desktop sidebar on mobile ──────────────────────────────────── */
+  .desktop-sidebar-spacer {
+    display: none !important;
+  }
+
+  /* ── Mobile top header ────────────────────────────────────────────────── */
+  .mobile-header {
+    display: flex;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 50;
+    height: 56px;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px;
+    background: rgb(11 11 12 / 0.80);
+    backdrop-filter: var(--glass-blur-md);
+    -webkit-backdrop-filter: var(--glass-blur-md);
+    border-bottom: 1px solid var(--glass-border);
+    box-shadow: 0 1px 0 rgb(255 255 255 / 0.04), 0 4px 20px rgb(0 0 0 / 0.28);
+  }
+
+  .mobile-header-logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    color: var(--text-primary);
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  .mobile-header-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--accent-dim);
+    border: 1px solid rgb(255 49 98 / 0.28);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--accent);
+    flex-shrink: 0;
+    text-decoration: none;
+  }
+
+  /* ── Mobile bottom navigation ─────────────────────────────────────────── */
+  .mobile-bottom-nav {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 50;
+    height: 60px;
+    align-items: stretch;
+    background: rgb(10 10 14 / 0.88);
+    backdrop-filter: var(--glass-blur-md);
+    -webkit-backdrop-filter: var(--glass-blur-md);
+    border-top: 1px solid var(--glass-border);
+    box-shadow: 0 -1px 0 rgb(255 255 255 / 0.04), 0 -4px 20px rgb(0 0 0 / 0.28);
+  }
+
+  .mobile-nav-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    text-decoration: none;
+    color: var(--text-secondary);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.03em;
+    transition: color var(--dur-fast) var(--ease-out);
+    min-height: 44px;
+    -webkit-tap-highlight-color: transparent;
+    position: relative;
+  }
+
+  .mobile-nav-item.active {
+    color: var(--accent);
+  }
+
+  .mobile-nav-item.active::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 24px;
+    height: 2px;
+    border-radius: 0 0 2px 2px;
+    background: var(--accent);
+    box-shadow: 0 0 8px var(--accent-glow);
+  }
+
+  /* ── Main content area on mobile ─────────────────────────────────────── */
+  .app-main {
+    padding: 72px 16px 80px !important;
+    margin-left: 0 !important;
+  }
+
+  /* ── Dashboard: category+tag grid → single column ────────────────────── */
+  .form-two-col {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* ── Category filter: no wrap, horizontal scroll ─────────────────────── */
+  .cat-filter-row {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 4px;
+  }
+
+  .cat-filter-row::-webkit-scrollbar {
+    display: none;
+  }
+
+  .cat-filter-row button {
+    flex-shrink: 0;
+  }
+
+  /* ── Bookmark card: 2-row layout on mobile ───────────────────────────── */
+  .bookmark-card-inner {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .bookmark-card-meta {
+    /* date hidden on mobile to save space */
+    display: none !important;
+  }
+
+  .bookmark-card-actions {
+    gap: 4px !important;
+  }
+
+  /* ── Search bar full width on mobile ─────────────────────────────────── */
+  .search-wrapper {
+    max-width: 100% !important;
+  }
+
+  /* ── Profile header stack on mobile ─────────────────────────────────── */
+  .profile-header-row {
+    flex-direction: column;
+    align-items: flex-start !important;
+  }
+
+  /* ── Import step label hide on mobile ────────────────────────────────── */
+  .step-label {
+    display: none;
+  }
+
+  /* ── Import dropzone compact on mobile ──────────────────────────────── */
+  .dropzone-label {
+    padding: 20px 16px !important;
+  }
+
+  /* ── Categories grid single column on mobile ─────────────────────────── */
+  .categories-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* ── Nav glass hidden on mobile (replaced by mobile-header) ─────────── */
+  .nav-glass {
+    display: none;
+  }
+
+  /* ── Public profile nav still shown — keep it ─────────────────────── */
+  .public-nav-glass {
+    display: flex !important;
+    height: 52px;
+    padding: 0 16px;
+  }
+
+  /* ── Aside (desktop sidebar) fully hidden ─────────────────────────── */
+  aside.glass-strong {
+    display: none !important;
+  }
+
+}

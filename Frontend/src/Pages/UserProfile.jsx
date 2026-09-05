@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import {
   Bookmark, Search, ExternalLink, Pencil, Trash2,
-  Check, X, AlertCircle , Globe
+  Check, X, AlertCircle, Globe
 } from "lucide-react";
 import "../styles/glass.css";
 import "@fontsource-variable/geist";
@@ -27,16 +27,16 @@ function domainColor(url) {
 
 export default function UserProfile() {
   const { user } = useAuth();
-  const { links, loading, error, fetchlinks, removelink, removetag, updatelink } = useLinks();
+  const { links, loading, error, fetchlinks, removelink, updatelink } = useLinks();
   const reduce = useReducedMotion();
 
-  const [searchTerm,      setSearchTerm]      = useState("");
-  const [selectedCategory,setSelectedCategory]= useState("All");
-  const [editingId,       setEditingId]       = useState(null);
-  const [editUrl,         setEditUrl]         = useState("");
-  const [editCategory,    setEditCategory]    = useState("");
-  const [editLoading,     setEditLoading]     = useState(false);
-  const [editError,       setEditError]       = useState("");
+  const [searchTerm,       setSearchTerm]       = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [editingId,        setEditingId]        = useState(null);
+  const [editUrl,          setEditUrl]          = useState("");
+  const [editCategory,     setEditCategory]     = useState("");
+  const [editLoading,      setEditLoading]      = useState(false);
+  const [editError,        setEditError]        = useState("");
 
   useEffect(() => { fetchlinks(); }, []);
 
@@ -69,11 +69,11 @@ export default function UserProfile() {
   const CATEGORIES = ["All","Personal","Entertainment","Knowledge","Instagram"];
 
   return (
-    <div style={{ position:"relative",minHeight:"100dvh",display:"flex" }}>
+    <div style={{ position:"relative",minHeight:"100dvh",display:"flex",overflowX:"hidden" }}>
       <div className="page-bg" aria-hidden="true" />
       <Sidebar />
 
-      <main role="main" style={{ flex:1,minWidth:0,position:"relative",zIndex:1,padding:"32px 32px 64px" }}>
+      <main role="main" className="app-main" style={{ flex:1,minWidth:0,position:"relative",zIndex:1,padding:"32px 32px 64px" }}>
         {/* Header */}
         <motion.div
           {...(reduce ? {} : { initial:{opacity:0,y:16},animate:{opacity:1,y:0},transition:{duration:0.5,ease:[0.16,1,0.3,1]} })}
@@ -100,7 +100,8 @@ export default function UserProfile() {
           {...(reduce ? {} : { initial:{opacity:0,y:12},animate:{opacity:1,y:0},transition:{duration:0.45,delay:0.08,ease:[0.16,1,0.3,1]} })}
           style={{ marginBottom:20 }}
         >
-          <div className="input-wrapper" style={{ marginBottom:14, maxWidth:400 }}>
+          {/* Search — full width on mobile via CSS */}
+          <div className="input-wrapper search-wrapper" style={{ marginBottom:14,maxWidth:400 }}>
             <span className="input-icon" aria-hidden="true">
               <Search size={16} strokeWidth={1.75} />
             </span>
@@ -113,7 +114,8 @@ export default function UserProfile() {
               aria-label="Search bookmarks"
             />
           </div>
-          <div style={{ display:"flex",gap:8,flexWrap:"wrap" }}>
+          {/* Category filter pills — horizontal scroll on mobile */}
+          <div className="cat-filter-row">
             {CATEGORIES.map(cat => (
               <button
                 key={cat}
@@ -127,7 +129,6 @@ export default function UserProfile() {
           </div>
         </motion.div>
 
-        {/* Error */}
         {error && (
           <div className="error-banner" role="alert" style={{ marginBottom:16 }}>
             <AlertCircle size={15} strokeWidth={2} style={{ flexShrink:0 }} />
@@ -164,7 +165,6 @@ export default function UserProfile() {
             filteredLinks.map((link, i) => (
               <motion.div
                 key={link._id}
-                layout
                 {...(reduce ? {} : {
                   initial:{opacity:0,y:10},
                   animate:{opacity:1,y:0},
@@ -175,11 +175,7 @@ export default function UserProfile() {
               >
                 {/* Main row */}
                 <div style={{ display:"flex",alignItems:"center",gap:12 }}>
-                  <div style={{
-                    width:40,height:40,borderRadius:10,background:domainColor(link.Linkdata),
-                    border:"1px solid var(--glass-border)",display:"flex",alignItems:"center",
-                    justifyContent:"center",fontSize:12,fontWeight:700,color:"var(--text-secondary)",flexShrink:0,
-                  }}>
+                  <div style={{ width:40,height:40,borderRadius:10,background:domainColor(link.Linkdata),border:"1px solid var(--glass-border)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,fontWeight:700,color:"var(--text-secondary)",flexShrink:0 }}>
                     {getInitials(link.Linkdata)}
                   </div>
 
@@ -192,11 +188,11 @@ export default function UserProfile() {
                     </p>
                   </div>
 
-                  <div style={{ display:"flex",alignItems:"center",gap:8,flexShrink:0 }}>
+                  <div className="bookmark-card-actions" style={{ display:"flex",alignItems:"center",gap:8,flexShrink:0 }}>
                     <span className="badge" style={{ fontSize:10 }}>
                       {link.CategoriesbyDef || link.customTagId?.Customcat}
                     </span>
-                    <p style={{ fontSize:11,color:"var(--text-muted)",whiteSpace:"nowrap" }}>
+                    <p className="bookmark-card-meta" style={{ fontSize:11,color:"var(--text-muted)",whiteSpace:"nowrap" }}>
                       {new Date(link.createdAt).toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"})}
                     </p>
                     <a href={link.Linkdata} target="_blank" rel="noreferrer" aria-label={`Open ${getDomain(link.Linkdata)}`}>
@@ -204,20 +200,10 @@ export default function UserProfile() {
                         <ExternalLink size={13} strokeWidth={1.75} />
                       </button>
                     </a>
-                    <button
-                      className="btn-icon"
-                      style={{ width:32,height:32 }}
-                      onClick={() => handleEditOpen(link)}
-                      aria-label="Edit bookmark"
-                    >
+                    <button className="btn-icon" style={{ width:32,height:32 }} onClick={() => handleEditOpen(link)} aria-label="Edit bookmark">
                       <Pencil size={13} strokeWidth={1.75} />
                     </button>
-                    <button
-                      className="btn-icon"
-                      style={{ width:32,height:32,color:"rgb(255 49 98 / 0.60)" }}
-                      onClick={() => handleDeleteLink(link._id)}
-                      aria-label="Delete bookmark"
-                    >
+                    <button className="btn-icon" style={{ width:32,height:32,color:"rgb(255 49 98 / 0.60)" }} onClick={() => handleDeleteLink(link._id)} aria-label="Delete bookmark">
                       <Trash2 size={13} strokeWidth={1.75} />
                     </button>
                   </div>
@@ -226,7 +212,7 @@ export default function UserProfile() {
                 {/* Inline edit panel */}
                 {editingId === link._id && (
                   <motion.div
-                    {...(reduce ? {} : { initial:{opacity:0,height:0},animate:{opacity:1,height:"auto"},transition:{duration:0.28,ease:[0.16,1,0.3,1]} })}
+                    {...(reduce ? {} : { initial:{opacity:0,y:-8},animate:{opacity:1,y:0},transition:{duration:0.22,ease:[0.16,1,0.3,1]} })}
                     className="glass-subtle r-md"
                     style={{ marginTop:12,padding:"14px",display:"flex",flexDirection:"column",gap:10 }}
                   >
@@ -260,9 +246,10 @@ export default function UserProfile() {
                         <X size={13} strokeWidth={2} /> Cancel
                       </button>
                       <button className="btn-primary" style={{ height:34,padding:"0 14px",fontSize:12 }} onClick={handleEditSave} disabled={editLoading}>
-                        {editLoading ? (
-                          <span style={{ width:13,height:13,borderRadius:"50%",border:"2px solid rgb(255 255 255 / 0.30)",borderTopColor:"#fff",animation:"spin 0.7s linear infinite" }} aria-hidden="true" />
-                        ) : <Check size={13} strokeWidth={2} />}
+                        {editLoading
+                          ? <span style={{ display:"inline-block",width:13,height:13,borderRadius:"50%",border:"2px solid rgb(255 255 255 / 0.30)",borderTopColor:"#fff",animation:"spin 0.7s linear infinite" }} aria-hidden="true" />
+                          : <Check size={13} strokeWidth={2} />
+                        }
                         Save
                       </button>
                     </div>
@@ -274,13 +261,7 @@ export default function UserProfile() {
         </div>
       </main>
 
-      <style>{`
-        @keyframes spin { to { transform: rotate(360deg); } }
-        @media (max-width: 768px) {
-          aside { transform: translateX(-100%); }
-          main[role="main"] { margin-left: 0 !important; padding: 80px 16px 48px !important; }
-        }
-      `}</style>
+      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </div>
   );
 }

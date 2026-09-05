@@ -80,7 +80,7 @@ export default function Publicprofile() {
       <div className="page-bg" aria-hidden="true" />
 
       {/* ── Nav ──────────────────────────────────────────────────────── */}
-      <nav className="nav-glass" role="navigation" aria-label="Main navigation">
+      <nav className="nav-glass public-nav-glass" role="navigation" aria-label="Main navigation">
         <Link to="/" className="nav-logo">
           <div className="nav-logo-mark" aria-hidden="true">B</div>
           BMS
@@ -111,7 +111,7 @@ export default function Publicprofile() {
           {...(reduce ? {} : { initial: { opacity: 0, y: 20 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] } })}
           style={{ marginBottom: 32 }}
         >
-          <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 16, flexWrap: "wrap" }}>
+          <div className="profile-header-row" style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 16, flexWrap: "wrap" }}>
             {/* Avatar */}
             <div style={{
               width: 52, height: 52, borderRadius: "50%", flexShrink: 0,
@@ -312,11 +312,7 @@ export default function Publicprofile() {
 
       </div>
 
-      <style>{`
-        @media (max-width: 480px) {
-          .nav-glass { padding: 0 16px; }
-        }
-      `}</style>
+      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </div>
   );
 }

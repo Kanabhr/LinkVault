@@ -6,10 +6,17 @@ export const AuthContext = createContext(null);
 export function AuthProvider({ children }) {
 
   const [user, setUser] = useState(null);
-
+  const [IswakingUp,setIswakingUp] = useState(true);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const wakeTimer = setTimeout(() => {
+      if(loading){
+        setIswakingUp(true)
+      }
+    }, 3000);
+
+
     getCurrentUser()
       .then((res) => setUser(res.data.data))   // res.data = ApiResponse, .data = user
       .catch(() => setUser(null))              // 401 or network error = not logged in
@@ -27,7 +34,7 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout }}>
+    <AuthContext.Provider value={{ user, loading, login, logout ,IswakingUp }}>
       {children}
     </AuthContext.Provider>
   );

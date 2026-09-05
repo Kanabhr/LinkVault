@@ -5,14 +5,13 @@ import { useAuth } from "../context/Authcontext";
 import { motion, useReducedMotion } from "motion/react";
 import {
   Bookmark, Plus, ExternalLink,
-  AlertCircle, Tag , Layers
+  AlertCircle, Tag, Layers
 } from "lucide-react";
 import "../styles/glass.css";
 import "@fontsource-variable/geist";
 import GlassSelect from "../components/GlassSelect";
 import Sidebar from "../components/Sidebar";
 
-// ─── Initials + color from URL ────────────────────────────────────────────
 const DOMAIN_COLORS = ["#1a1a2e","#1a0d0d","#0d0d1a","#0d1a16","#1a160d","#101a1a"];
 function getInitials(url) {
   try { return new URL(url).hostname.replace("www.","").slice(0,2).toUpperCase(); }
@@ -23,22 +22,20 @@ function getDomain(url) {
   catch { return url; }
 }
 function domainColor(url) {
-  try {
-    const h = new URL(url).hostname;
-    return DOMAIN_COLORS[h.charCodeAt(0) % DOMAIN_COLORS.length];
-  } catch { return DOMAIN_COLORS[0]; }
+  try { const h = new URL(url).hostname; return DOMAIN_COLORS[h.charCodeAt(0) % DOMAIN_COLORS.length]; }
+  catch { return DOMAIN_COLORS[0]; }
 }
 
 export default function Dashboard() {
-  const [linkText,setLinkText] = useState("");
-  const [Customtag,setCustomtag] = useState("");
-  const [selectedCategory,setSelectedCategory]= useState("Personal");
-  const [loading,setLoading] = useState(false);
-  const [error,setError] = useState("");
+  const [linkText,         setLinkText]         = useState("");
+  const [Customtag,        setCustomtag]        = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("Personal");
+  const [loading,          setLoading]          = useState(false);
+  const [error,            setError]            = useState("");
 
   const { user } = useAuth();
   const { fetchlinks, addlinks, links, loading: linksLoading, error: linksError } = useLinks();
-  const reduce   = useReducedMotion();
+  const reduce = useReducedMotion();
 
   useEffect(() => { fetchlinks(); }, []);
 
@@ -63,14 +60,13 @@ export default function Dashboard() {
   };
 
   return (
-    <div style={{ position:"relative", minHeight:"100dvh", display:"flex" }}>
+    <div style={{ position:"relative", minHeight:"100dvh", display:"flex", overflowX:"hidden" }}>
       <div className="page-bg" aria-hidden="true" />
-
       <Sidebar />
 
-      {/* ── Main content ──────────────────────────────────────────────── */}
       <main
         role="main"
+        className="app-main"
         style={{ flex:1, minWidth:0, position:"relative", zIndex:1, padding:"32px 32px 64px" }}
       >
         {/* Page header */}
@@ -93,11 +89,7 @@ export default function Dashboard() {
           style={{ padding:"24px",marginBottom:28 }}
         >
           <div style={{ display:"flex",alignItems:"center",gap:10,marginBottom:20 }}>
-            <div style={{
-              width:32,height:32,borderRadius:"var(--r-md)",background:"var(--accent-dim)",
-              border:"1px solid rgb(255 49 98 / 0.28)",display:"flex",alignItems:"center",
-              justifyContent:"center",flexShrink:0,
-            }}>
+            <div style={{ width:32,height:32,borderRadius:"var(--r-md)",background:"var(--accent-dim)",border:"1px solid rgb(255 49 98 / 0.28)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0 }}>
               <Plus size={16} color="var(--accent)" strokeWidth={2} />
             </div>
             <h2 style={{ fontSize:16,fontWeight:650,letterSpacing:"-0.015em",color:"var(--text-primary)" }}>
@@ -106,7 +98,6 @@ export default function Dashboard() {
           </div>
 
           <form onSubmit={handleEvent} noValidate style={{ display:"flex",flexDirection:"column",gap:14 }}>
-            {/* URL textarea */}
             <div className="field">
               <label htmlFor="linkText" className="field-label">URLs</label>
               <textarea
@@ -122,8 +113,8 @@ export default function Dashboard() {
               />
             </div>
 
-            {/* Category + custom tag row */}
-            <div style={{ display:"grid",gridTemplateColumns:"1fr 1fr",gap:12 }}>
+            {/* Category + custom tag — 2-col on desktop, 1-col on mobile */}
+            <div className="form-two-col" style={{ display:"grid",gridTemplateColumns:"1fr 1fr",gap:12 }}>
               <div className="field">
                 <label htmlFor="category" className="field-label">Category</label>
                 <GlassSelect
@@ -138,7 +129,6 @@ export default function Dashboard() {
                   style={{ width: "100%" }}
                 />
               </div>
-
               <div className="field">
                 <label htmlFor="customtag" className="field-label">Custom Tag (optional)</label>
                 <div className="input-wrapper">
@@ -157,7 +147,6 @@ export default function Dashboard() {
               </div>
             </div>
 
-            {/* Error */}
             {error && (
               <div className="error-banner" role="alert" aria-live="polite">
                 <AlertCircle size={15} strokeWidth={2} style={{ flexShrink:0 }} />
@@ -165,11 +154,10 @@ export default function Dashboard() {
               </div>
             )}
 
-            {/* Submit */}
             <button type="submit" className="btn-primary full" disabled={loading} aria-busy={loading} style={{ marginTop:4 }}>
               {loading ? (
                 <>
-                  <span style={{ width:14,height:14,borderRadius:"50%",border:"2px solid rgb(255 255 255 / 0.30)",borderTopColor:"#fff",animation:"spin 0.7s linear infinite",flexShrink:0 }} aria-hidden="true" />
+                  <span style={{ display:"inline-block",width:14,height:14,borderRadius:"50%",border:"2px solid rgb(255 255 255 / 0.30)",borderTopColor:"#fff",animation:"spin 0.7s linear infinite",flexShrink:0 }} aria-hidden="true" />
                   Saving...
                 </>
               ) : (
@@ -234,11 +222,7 @@ export default function Dashboard() {
                   className="glass-subtle r-md"
                   style={{ display:"flex",alignItems:"center",gap:12,padding:"10px 14px" }}
                 >
-                  <div style={{
-                    width:36,height:36,borderRadius:8,background:domainColor(link.Linkdata),
-                    border:"1px solid var(--glass-border)",display:"flex",alignItems:"center",
-                    justifyContent:"center",fontSize:11,fontWeight:700,color:"var(--text-secondary)",flexShrink:0,
-                  }}>
+                  <div style={{ width:36,height:36,borderRadius:8,background:domainColor(link.Linkdata),border:"1px solid var(--glass-border)",display:"flex",alignItems:"center",justifyContent:"center",fontSize:11,fontWeight:700,color:"var(--text-secondary)",flexShrink:0 }}>
                     {getInitials(link.Linkdata)}
                   </div>
                   <div style={{ flex:1,minWidth:0 }}>
@@ -264,13 +248,7 @@ export default function Dashboard() {
         </motion.div>
       </main>
 
-      <style>{`
-        @keyframes spin { to { transform: rotate(360deg); } }
-        @media (max-width: 768px) {
-          aside { transform: translateX(-100%); }
-          main[role="main"] { margin-left: 0 !important; padding: 80px 16px 48px !important; }
-        }
-      `}</style>
+      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </div>
   );
 }

@@ -1,10 +1,9 @@
 import { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { chromePreview, chromeConfirm } from "../api/importApi";
 import { useLinks } from "../context/Linkcontext";
-import { useAuth } from "../context/Authcontext";
 import { motion, useReducedMotion } from "motion/react";
-import { Upload, FileText, ArrowRight, CheckCircle2, AlertCircle, Check} from "lucide-react";
+import { Upload, FileText, ArrowRight, CheckCircle2, AlertCircle, Check, Eye, SkipForward,LayoutDashboard} from "lucide-react";
 import "../styles/glass.css";
 import "@fontsource-variable/geist";
 import GlassSelect from "../components/GlassSelect";
@@ -152,13 +151,13 @@ export default function ImportPage() {
   const step = importResult ? 3 : editableLinks.length > 0 ? 2 : 1;
 
   return (
-    <div style={{ position: "relative", minHeight: "100dvh", display: "flex" }}>
+    <div style={{ position: "relative", minHeight: "100dvh", display: "flex", overflowX: "hidden" }}>
       <div className="page-bg" aria-hidden="true" />
 
       <Sidebar />
 
       {/* ── Main content ──────────────────────────────────────────────── */}
-      <main role="main" style={{ flex: 1, minWidth: 0, position: "relative", zIndex: 1, padding: "32px 32px 64px" }}>
+      <main role="main" className="app-main" style={{ flex: 1, minWidth: 0, position: "relative", zIndex: 1, padding: "32px 32px 64px" }}>
         {/* Page header */}
         <motion.div {...(reduce ? {} : { initial: { opacity: 0, y: 16 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] } })} style={{ marginBottom: 28 }}>
           <h1 style={{ fontSize: "clamp(22px,2.5vw,32px)", fontWeight: 720, letterSpacing: "-0.025em", color: "var(--text-primary)", marginBottom: 4 }}>Import Bookmarks</h1>
@@ -200,6 +199,7 @@ export default function ImportPage() {
                   {step > n ? <Check size={10} strokeWidth={3} /> : n}
                 </div>
                 <span
+                  className="step-label"
                   style={{
                     fontSize: 12,
                     fontWeight: 600,
@@ -246,6 +246,7 @@ export default function ImportPage() {
             {/* Drop zone */}
             <label
               htmlFor="chromeimport"
+              className="dropzone-label"
               style={{
                 display: "flex",
                 flexDirection: "column",
@@ -528,13 +529,7 @@ export default function ImportPage() {
         )}
       </main>
 
-      <style>{`
-        @keyframes spin { to { transform: rotate(360deg); } }
-        @media (max-width: 768px) {
-          aside { transform: translateX(-100%); }
-          main[role="main"] { margin-left: 0 !important; padding: 80px 16px 48px !important; }
-        }
-      `}</style>
+      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </div>
   );
 }
