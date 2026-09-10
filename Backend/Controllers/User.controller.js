@@ -1,6 +1,6 @@
 import { AsyncHandler } from "../Utils/AsyncHandler.js";
 import { User } from "../MongoDB/Models/UserSchema.js";
-import { urldata } from "../MongoDB/Models/Urlschema.js";
+import { CustomTag, urldata } from "../MongoDB/Models/Urlschema.js";
 import { ApiError } from "../Utils/ApiError.js";
 import { ApiResponse } from "../Utils/ApiResponse.js";
 import { ValidPassword, ValidEmail, ValidUserName, InputValidation } from "../Utils/Validation.js";
@@ -96,8 +96,12 @@ const UserProfile = AsyncHandler(async (req, res) => {
   const UserLinks = await urldata.find({ userId: req.user._id }).populate("customTagId").populate("userId", "username useremail");
   res.status(200).json(new ApiResponse(200, { UserLinks }, "User data fetched"));
 });
+const UserCustomTag = AsyncHandler(async (req,res) => {
+  const UserCustomtags = await CustomTag.find({UserID: req.user._id}).populate("parentTag");
+   res.status(200).json(new ApiResponse(200, { UserCustomtags }, "User tags fetched"))
+})
 const getCurrentUser = AsyncHandler(async (req, res) => {
   res.status(200).json(new ApiResponse(200, req.user, "User fetched"));
 });
 
-export { RegisterUser, LoginUser, UserProfile, LogoutUser, getCurrentUser };
+export { RegisterUser, LoginUser, UserProfile, LogoutUser, getCurrentUser ,UserCustomTag };

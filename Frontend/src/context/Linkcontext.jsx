@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useState } from "react";
-import { getuserlinks, savelink , deletelink , deletetag ,editlink,edittag } from "../api/linkApi.js";
+import { getuserlinks, savelink , deletelink , deletetag ,editlink,edittag,getusertags } from "../api/linkApi.js";
 
 export const LinkContext = createContext(null);
 
@@ -26,7 +26,19 @@ const fetchlinks = useCallback(async () => {
     setLoading(false) // always runs, success or fail
   }
 },[])
- 
+ const fetchtags = useCallback(async () => {
+  setLoading(true)
+  try {
+    const res = await getusertags()
+    const userTags = res.data.data.UserTags
+    setCustomtags(userTags)
+  } catch (error) {
+    setError(error.response?.data?.message || "Failed to fetch tags")
+  }
+  finally{
+    setLoading(false)
+  }
+ },[])
 
   const addlinks = async (data) => {
   const res = await savelink(data)
@@ -75,7 +87,7 @@ const fetchlinks = useCallback(async () => {
     // for updating
   }
   return (
-    <LinkContext.Provider value={{ fetchlinks,addlinks,removelink,removetag,updatelink,updatetag,links,customtags,loading,error}}>
+    <LinkContext.Provider value={{ fetchlinks,addlinks,removelink,removetag,updatelink,updatetag,links,customtags,loading,error,fetchtags}}>
       {children}
     </LinkContext.Provider>
   );

@@ -27,18 +27,19 @@ function domainColor(url) {
 
 export default function UserProfile() {
   const { user } = useAuth();
-  const { links, loading, error, fetchlinks, removelink, updatelink } = useLinks();
+  const { links, loading, error, fetchlinks, removelink, updatelink, fetchtags, customtags } = useLinks();
   const reduce = useReducedMotion();
 
-  const [searchTerm,       setSearchTerm]       = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("All");
-  const [editingId,        setEditingId]        = useState(null);
-  const [editUrl,          setEditUrl]          = useState("");
-  const [editCategory,     setEditCategory]     = useState("");
-  const [editLoading,      setEditLoading]      = useState(false);
-  const [editError,        setEditError]        = useState("");
-
-  useEffect(() => { fetchlinks(); }, []);
+  const [searchTerm,setSearchTerm] = useState("");
+  const [selectedCategory,setSelectedCategory] = useState("All");
+  const [editingId,setEditingId] = useState(null);
+  const [editUrl,setEditUrl] = useState("");
+  const [editCategory,setEditCategory] = useState("");
+  const [editLoading,setEditLoading] = useState(false);
+  const [editError,setEditError] = useState("");
+  const [editCustomTagId, setEditCustomTagId] = useState("")
+  // const [customtags,setCustomtags] = useState([])
+  useEffect(() => { fetchlinks(),fetchtags(); }, []);
 
   const filteredLinks = links
     .filter(l => l.Linkdata.toLowerCase().includes(searchTerm.toLowerCase()))
@@ -50,6 +51,7 @@ export default function UserProfile() {
     setEditingId(link._id);
     setEditUrl(link.Linkdata);
     setEditCategory(link.CategoriesbyDef || "Personal");
+    setEditCustomTagId(link.customTagId?._id || "")
     setEditError("");
   };
 
@@ -57,7 +59,7 @@ export default function UserProfile() {
     if (!editUrl) { setEditError("URL cannot be empty"); return; }
     setEditLoading(true);
     try {
-      await updatelink(editingId, { Linkdata: editUrl, CategoriesbyDef: editCategory });
+      await updatelink(editingId, { Linkdata: editUrl, CategoriesbyDef: editCategory,customTagId: editCustomTagId || null });
       setEditingId(null);
     } catch (err) {
       setEditError(err.response?.data?.message || "Failed to update link");
@@ -171,7 +173,7 @@ export default function UserProfile() {
                   transition:{duration:0.35,delay:i*0.04,ease:[0.16,1,0.3,1]},
                 })}
                 className="glass r-lg"
-                style={{ padding:"14px 16px" }}
+                style={{ padding:"14px 16px", position:"relative", zIndex: editingId === link._id ? 10 : 1 }}
               >
                 {/* Main row */}
                 <div style={{ display:"flex",alignItems:"center",gap:12 }}>
@@ -214,7 +216,7 @@ export default function UserProfile() {
                   <motion.div
                     {...(reduce ? {} : { initial:{opacity:0,y:-8},animate:{opacity:1,y:0},transition:{duration:0.22,ease:[0.16,1,0.3,1]} })}
                     className="glass-subtle r-md"
-                    style={{ marginTop:12,padding:"14px",display:"flex",flexDirection:"column",gap:10 }}
+                    style={{ marginTop:12,padding:"14px",display:"flex",flexDirection:"column",gap:10,position:"relative",overflow:"visible" }}
                   >
                     <div style={{ display:"grid",gridTemplateColumns:"1fr auto",gap:10 }}>
                       <input
@@ -226,14 +228,25 @@ export default function UserProfile() {
                         placeholder="URL"
                         aria-label="Edit URL"
                       />
-                      <GlassSelect
+                      {/* <GlassSelect
                         value={editCategory}
                         onChange={setEditCategory}
                         options={["Personal","Entertainment","Knowledge","Instagram"]}
                         aria-label="Edit category"
                         height={40}
                         fontSize={13}
-                      />
+                      /> // this option needs customcategory too */}
+                      <GlassSelect
+                        value={editCustomTagId}
+                        onChange={setEditCustomTagId}
+                        options={[
+                        { value: "", label: "-- No tag --" },
+                        ...customtags.map(tag => ({ value: tag._id, label: tag.Customcat }))
+                        ]}
+                        aria-label="Edit custom tag"
+                        height={40}
+                        fontSize={13}
+                        />
                     </div>
                     {editError && (
                       <div className="error-banner" role="alert">

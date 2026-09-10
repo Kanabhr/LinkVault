@@ -44,14 +44,14 @@ const SaveLinks = AsyncHandler(async (req, res) => {
 });
 // in mongo when using create we need only to include required: true fields defined in schema
 const EditLinkdata = AsyncHandler(async (req, res) => {
-  const { Linkdata, CategoriesbyDef } = req.body;
+  const { Linkdata, CategoriesbyDef ,customTagId } = req.body;
   const updatedlinkdata = await urldata.findByIdAndUpdate(
     req.params.id,
     {
-      $set: { Linkdata, CategoriesbyDef },
+      $set: { Linkdata, CategoriesbyDef, customTagId: customTagId || null }
     },
     { new: true },
-  );
+  ).populate("customTagId");
   res.status(200).json(new ApiResponse(200, updatedlinkdata, "Linkdata fields edited successfully"));
 });
 const EditCustomTag = AsyncHandler(async (req, res) => {
