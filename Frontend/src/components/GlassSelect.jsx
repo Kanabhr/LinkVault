@@ -123,9 +123,7 @@ export default function GlassSelect({
             zIndex: 200,
             borderRadius: "var(--r-md)",
             border: "1px solid var(--glass-border-hi)",
-            background: "rgb(18 18 24 / 0.92)",
-            backdropFilter: "blur(32px) saturate(200%)",
-            WebkitBackdropFilter: "blur(32px) saturate(200%)",
+            background: "#131318",
             boxShadow:
               "inset 0 1px 0 rgb(255 255 255 / 0.10), 0 16px 48px rgb(0 0 0 / 0.60), 0 4px 12px rgb(0 0 0 / 0.32)",
             overflow: "hidden",
