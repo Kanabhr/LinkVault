@@ -45,18 +45,18 @@ function LinkRow({ link, reduce, i }) {
 }
 
 export default function Categories() {
-  const { links, customtags, loading, error, fetchlinks } = useLinks();
+  const { links, customtags, loading, error, fetchlinks, fetchtags } = useLinks();
   const reduce = useReducedMotion();
 
-  useEffect(() => { fetchlinks(); }, []);
+  useEffect(() => { fetchlinks(); fetchtags(); }, []);
 
   const groupedByCategory = PRESET_CATEGORIES.reduce((acc, cat) => {
-    acc[cat] = links.filter(l => l.CategoriesbyDef === cat);
+    acc[cat] = (links ?? []).filter(l => l.CategoriesbyDef === cat);
     return acc;
   }, {});
 
-  const groupedByTag = customtags.reduce((acc, tag) => {
-    acc[tag.Customcat] = links.filter(l => l.customTagId?._id === tag._id);
+  const groupedByTag = (customtags ?? []).reduce((acc, tag) => {
+    acc[tag.Customcat] = (links ?? []).filter(l => l.customTagId?._id === tag._id);
     return acc;
   }, {});
 
@@ -143,7 +143,7 @@ export default function Categories() {
             Custom Tags
           </h2>
 
-          {!loading && customtags.length === 0 ? (
+          {!loading && (customtags ?? []).length === 0 ? (
             <div className="glass r-lg" style={{ textAlign:"center",padding:"40px 24px" }}>
               <Tag size={28} color="var(--text-muted)" strokeWidth={1.5} style={{ margin:"0 auto 12px" }} />
               <p style={{ fontSize:14,color:"var(--text-secondary)",fontWeight:600,marginBottom:4 }}>No custom tags yet</p>
@@ -151,7 +151,7 @@ export default function Categories() {
             </div>
           ) : (
             <div className="categories-grid" style={{ display:"grid",gridTemplateColumns:"repeat(2,1fr)",gap:14 }}>
-              {customtags.map((tag, ti) => (
+              {(customtags ?? []).map((tag, ti) => (
                 <motion.div
                   key={tag._id}
                   {...(reduce ? {} : { initial:{opacity:0,y:14},animate:{opacity:1,y:0},transition:{duration:0.45,delay:ti*0.07,ease:[0.16,1,0.3,1]} })}
