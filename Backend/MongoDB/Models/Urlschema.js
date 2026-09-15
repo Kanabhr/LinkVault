@@ -63,6 +63,10 @@ const urlschema = new mongoose.Schema(
     confidence:{
       type: String,
       default: null
+    },
+    thumbnailUrl:{
+      type: String,
+      default: null
     }
   },
   { timestamps: true },

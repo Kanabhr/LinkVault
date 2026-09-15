@@ -1,8 +1,5 @@
 import mongoose from "mongoose";
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
 const OAuthTokenSchema = new mongoose.Schema({
-
 userId:{
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",

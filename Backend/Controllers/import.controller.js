@@ -194,7 +194,7 @@ const Givecatbygemini = (url, title) => {
   return { url, title, category: null, confidence: "low" };
 };
 
-const bulkInsert = async (normalizedLinks) => {
+export const bulkInsert = async (normalizedLinks) => {
   try {
     const result = await urldata.insertMany(normalizedLinks, { ordered: false });
     return { inserted: result.length, skipped: 0 };
@@ -252,7 +252,7 @@ export const chromePreview = AsyncHandler(async (req, res) => {
     })),
   ];
 
-  // 8. return preview — no DB write
+  // 8. return preview — no DB write done here
   res.status(200).json(
     new ApiResponse(
       200,
