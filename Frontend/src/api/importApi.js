@@ -12,3 +12,18 @@ export const chromePreview = (file) => {
 // sends confirmed preview to backend — writes to DB, returns { inserted, skipped }
 export const chromeConfirm = (previewData) =>
   axiosService.post("/import/chrome/confirm", { links: previewData })
+
+// connectYT main func is to redirect user to youtube
+export const connectYoutube = () =>
+  window.location.href ="/api/v1/oauth/youtube/connect"
+
+// getytstatus main func is to get status
+export const getYouTubeStatus = () =>
+  axiosService.get("/oauth/youtube/status")
+
+// revokeYouTube main func is to revoke yt access
+
+export const revokeYouTube = () =>
+  axiosService.delete("/oauth/youtube/revoke")
+
+// 
