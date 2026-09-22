@@ -102,7 +102,7 @@ export const fetchLikedVideos = async (oauth2client) => {
         thumbnailUrl: item.snippet.thumbnails.medium.url,
       }),
     );
-    break;
+    
   } while (nextPageToken);
 
   return allVideos;

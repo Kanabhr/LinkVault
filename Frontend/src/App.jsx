@@ -37,7 +37,7 @@ function App() {
           <Route path="/profile" element={<UserProfile />} />
           <Route path="/categories" element={<Categories />} />
           <Route path="/import" element={<ImportPage/>} />
-          <Route path="/imporfromYT" element={<YouTubeImportPage/>}/>
+          <Route path="/importfromYT" element={<YouTubeImportPage/>}/>
         </Route>
       </Routes>
     </Router>

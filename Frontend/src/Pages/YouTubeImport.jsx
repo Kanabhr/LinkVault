@@ -9,7 +9,9 @@ import "@fontsource-variable/geist";
 import Sidebar from "../components/Sidebar";
 
 export default function YouTubeImportPage() {
-  const [loading, setLoading] = useState(false);
+  const [statusLoading, setStatusLoading] = useState(false);
+  const [previewLoading, setPreviewLoading] = useState(false);
+  const [importLoading, setImportLoading] = useState(false);
   const [isconnected, setIsConnected] = useState(false);
   const [playlistID, setPlaylistID] = useState("");
   const [preview, setPreview] = useState([]);
@@ -25,14 +27,14 @@ export default function YouTubeImportPage() {
 
   useEffect(() => {
     const checkStatus = async () => {
-      setLoading(true);
+      setStatusLoading(true);
       try {
         const res = await getYouTubeStatus();
         setIsConnected(res.data.data.connected);
       } catch (err) {
         setError(err.response?.data?.message || "Failed to get YouTube authentication status");
       } finally {
-        setLoading(false);
+        setStatusLoading(false);
       }
     };
     checkStatus();
@@ -43,7 +45,7 @@ export default function YouTubeImportPage() {
   };
 
   const HandleRevoke = async () => {
-    setLoading(true);
+    setStatusLoading(true);
     try {
       await revokeYouTube();
       setPlaylistID("");
@@ -54,12 +56,12 @@ export default function YouTubeImportPage() {
     } catch (err) {
       setError(err.response?.data?.message || "Failed to revoke YouTube access");
     } finally {
-      setLoading(false);
+      setStatusLoading(false);
     }
   };
 
   const handleGetPlaylists = async () => {
-    setLoading(true);
+    setPreviewLoading(true);
     setError("");
     try {
       const res = await getYouTubePlaylists();
@@ -68,12 +70,12 @@ export default function YouTubeImportPage() {
     } catch (err) {
       setError(err.response?.data?.message || "Failed to fetch playlists");
     } finally {
-      setLoading(false);
+      setPreviewLoading(false);
     }
   };
 
   const handlePreview = async (type, id) => {
-    setLoading(true);
+    setPreviewLoading(true);
     setError("");
     try {
       const res = await youtubePreview(type, id || playlistID);
@@ -81,14 +83,14 @@ export default function YouTubeImportPage() {
     } catch (err) {
       setError(err.response?.data?.message || "YouTube preview failed");
     } finally {
-      setLoading(false);
+      setPreviewLoading(false);
     }
   };
 
   const handlePlaylistSelect = (id) => {
     setPlaylistID(id);
     setShowPlaylistPicker(false);
-    handlePreview("playlist", id);
+     handlePreview("playlist", id);
   };
 
   const handleToggleSelect = (index) => {
@@ -124,7 +126,7 @@ export default function YouTubeImportPage() {
       setError("No videos to import");
       return;
     }
-    setLoading(true);
+    setImportLoading(true);
     setError("");
     try {
       const toImport = selectedIndexes.size > 0 ? preview.filter((_, i) => selectedIndexes.has(i)) : preview;
@@ -134,7 +136,7 @@ export default function YouTubeImportPage() {
     } catch (err) {
       setError(err.response?.data?.message || "Import of videos failed");
     } finally {
-      setLoading(false);
+      setImportLoading(false);
     }
   };
 
@@ -234,20 +236,20 @@ export default function YouTubeImportPage() {
                   border: `1px solid ${isconnected ? "rgb(48 209 88 / 0.28)" : "var(--glass-border)"}`,
                   color: isconnected ? "#30d158" : "var(--text-muted)",
                 }}>
-                {loading ? "Checking..." : isconnected ? "Connected" : "Not connected"}
+                {statusLoading ? "Checking..." : isconnected ? "Connected" : "Not connected"}
               </span>
             </div>
 
             {!isconnected ? (
-              <button onClick={HandleConnect} disabled={loading} className="btn-primary full" style={{ height: 48, gap: 8, color: "#fff" }} aria-busy={loading}>
+              <button onClick={HandleConnect} disabled={statusLoading} className="btn-primary full" style={{ height: 48, gap: 8, color: "#fff" }} aria-busy={statusLoading}>
                 <Link2 size={15} strokeWidth={2} />
                 Connect YouTube Account
               </button>
             ) : (
               <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                 {/* Liked videos */}
-                <button onClick={() => handlePreview("liked")} disabled={loading} className="btn-primary full" style={{ height: 48, gap: 8, color: "#fff" }} aria-busy={loading}>
-                  {loading ? (
+                <button onClick={() => handlePreview("liked")} disabled={previewLoading} className="btn-primary full" style={{ height: 48, gap: 8, color: "#fff" }} aria-busy={previewLoading}>
+                  {previewLoading ? (
                     <>
                       <span style={{ display: "inline-block", width: 14, height: 14, borderRadius: "50%", border: "2px solid rgb(255 255 255 / 0.30)", borderTopColor: "#fff", animation: "spin 0.7s linear infinite", flexShrink: 0 }} aria-hidden="true" />
                       Loading...
@@ -261,8 +263,8 @@ export default function YouTubeImportPage() {
                 </button>
 
                 {/* Import from Playlist */}
-                <button onClick={handleGetPlaylists} disabled={loading} className="btn-ghost full" style={{ height: 48, gap: 8 }}>
-                  {loading ? (
+                <button onClick={handleGetPlaylists} disabled={previewLoading} className="btn-ghost full" style={{ height: 48, gap: 8 }}>
+                  {previewLoading ? (
                     <>
                       <span style={{ display: "inline-block", width: 14, height: 14, borderRadius: "50%", border: "2px solid rgb(255 255 255 / 0.30)", borderTopColor: "#fff", animation: "spin 0.7s linear infinite", flexShrink: 0 }} aria-hidden="true" />
                       Loading playlists...
@@ -321,7 +323,7 @@ export default function YouTubeImportPage() {
                 {/* Revoke */}
                 <button
                   onClick={HandleRevoke}
-                  disabled={loading}
+                  disabled={statusLoading}
                   style={{
                     height: 36,
                     padding: "0 14px",
@@ -367,8 +369,8 @@ export default function YouTubeImportPage() {
                 <button onClick={handleSelectAll} className="btn-ghost" style={{ height: 36, padding: "0 14px", fontSize: 12 }}>
                   {selectedIndexes.size === preview.length ? "Deselect All" : "Select All"}
                 </button>
-                <button onClick={handleconfirm} disabled={loading} className="btn-primary" style={{ height: 42, gap: 8, padding: "0 20px", color: "#fff" }} aria-busy={loading}>
-                  {loading ? (
+                <button onClick={handleconfirm} disabled={importLoading} className="btn-primary" style={{ height: 42, gap: 8, padding: "0 20px", color: "#fff" }} aria-busy={importLoading}>
+                  {importLoading ? (
                     <>
                       <span style={{ display: "inline-block", width: 13, height: 13, borderRadius: "50%", border: "2px solid rgb(255 255 255 / 0.30)", borderTopColor: "#fff", animation: "spin 0.7s linear infinite", flexShrink: 0 }} aria-hidden="true" />
                       Importing...
@@ -459,8 +461,8 @@ export default function YouTubeImportPage() {
             </div>
 
             {/* Bottom CTA */}
-            <button onClick={handleconfirm} disabled={loading} className="btn-primary full" style={{ marginTop: 20, height: 48, gap: 8, color: "#fff" }} aria-busy={loading}>
-              {loading ? (
+            <button onClick={handleconfirm} disabled={importLoading} className="btn-primary full" style={{ marginTop: 20, height: 48, gap: 8, color: "#fff" }} aria-busy={importLoading}>
+              {importLoading ? (
                 <>
                   <span style={{ display: "inline-block", width: 14, height: 14, borderRadius: "50%", border: "2px solid rgb(255 255 255 / 0.30)", borderTopColor: "#fff", animation: "spin 0.7s linear infinite", flexShrink: 0 }} aria-hidden="true" />
                   Importing...
