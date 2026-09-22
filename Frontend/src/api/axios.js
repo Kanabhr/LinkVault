@@ -11,13 +11,10 @@ const axiosService = axios.create({
 axiosService.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (
-      error.response?.status === 401 &&
-      !error.config?.url?.includes("/users/login")
-    ) {
-      window.location.href = "/login"
+    if (error.response?.status === 401 && !error.config?.url?.includes("/users/login")) {
+      window.location.href = "/login";
     }
-    return Promise.reject(error)
-  }
-)
-export default axiosService 
+    return Promise.reject(error);
+  },
+);
+export default axiosService;

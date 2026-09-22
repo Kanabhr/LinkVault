@@ -1,19 +1,16 @@
 import { GoogleGenAI } from "@google/genai";
 
-  const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 export const categorizeWithGemini = async (links) => {
-
-if(!links || links.length === 0) return []
+  if (!links || links.length === 0) return [];
 
   try {
-    const numberedURLstring = links
-      .map((link, i) => `${i + 1}. ${link.url} — ${link.title}`)
-      .join("\n");
+    const numberedURLstring = links.map((link, i) => `${i + 1}. ${link.url} — ${link.title}`).join("\n");
 
     const response = await ai.models.generateContent({
-      model: "gemini-3.5-flash-lite", 
-      contents: numberedURLstring,        
+      model: "gemini-3.5-flash-lite",
+      contents: numberedURLstring,
       config: {
         systemInstruction: `You are a URL classifier for a bookmark manager application.
 
@@ -57,7 +54,12 @@ Critical rules:
 
     const tags = response.text
       .split("\n")
-      .map((line) => line.trim().toLowerCase().replace(/[^a-z]/g, ""))
+      .map((line) =>
+        line
+          .trim()
+          .toLowerCase()
+          .replace(/[^a-z]/g, ""),
+      )
       .filter((line) => line.length > 0);
 
     return links.map((link, i) => ({

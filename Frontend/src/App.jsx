@@ -10,9 +10,11 @@ import Categories from "./Pages/Categories";
 import PublicProfile from "./Pages/PublicProfile";
 import Notfound from "./Pages/Notfound";
 import ImportPage from "./Pages/ImportPage";
+import YouTubeImportPage from "./Pages/YouTubeImport";
 // Route guards
 import ProtectedRoute from "./components/ProtectedRoute";
 import PublicRoute from "./components/PublicRoute";
+
 
 function App() {
   return (
@@ -35,6 +37,7 @@ function App() {
           <Route path="/profile" element={<UserProfile />} />
           <Route path="/categories" element={<Categories />} />
           <Route path="/import" element={<ImportPage/>} />
+          <Route path="/imporfromYT" element={<YouTubeImportPage/>}/>
         </Route>
       </Routes>
     </Router>
